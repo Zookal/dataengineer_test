@@ -19,3 +19,6 @@ bandit==1.7.0
 
 # Airflow
 apache-airflow~=2.0.0b3
+
+# PySpark
+pyspark==3.0.1
