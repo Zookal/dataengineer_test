@@ -5,3 +5,7 @@ but ideally we can use Azure Databricks or AWS EMR in the production environment
 
 #### TODO:
 * Create a wait script entrypoint for postgresql and airflow web server 
+
+#### Dev Notes:
+* Add Spark Kafka option: exactly once
+* Add execution datetime column in SQLite for batch parsing
