@@ -1,10 +1,7 @@
-from typing import Dict, List
+from typing import Dict
 
 from airflow.models import BaseOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
-from mysql.connector.errors import OperationalError
-from mysql.connector.cursor import MySQLCursorDict
-from kafka import KafkaProducer
 
 
 class DataSyncOperator(BaseOperator):

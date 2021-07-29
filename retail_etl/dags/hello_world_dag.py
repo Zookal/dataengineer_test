@@ -53,10 +53,7 @@ spark_job = SparkSubmitOperator(
 end = DummyOperator(task_id="end", dag=dag)
 
 data_sync = DataSyncOperator(
-    task_id="data_sync",
-    mysql_conn_id="mysql_default",
-    create_table_script="",
-    dag=dag
+    task_id="data_sync", mysql_conn_id="mysql_default", create_table_script="", dag=dag
 )
 
 start >> data_sync >> spark_job >> end

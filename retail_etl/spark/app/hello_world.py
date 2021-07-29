@@ -11,7 +11,7 @@ spark = SparkSession.builder.config(conf=conf).appName("hello-world").getOrCreat
 
 # Read file
 region_data_path = Path(__file__).parent.parent.parent / "data" / "lineitem.tbl"
-print(region_data_path.exists(), "*****"*50)
+print(region_data_path.exists(), "*****" * 50)
 df = spark.read.option("header", False).csv(path=str(region_data_path), sep="|")
 
 print(df.count())
