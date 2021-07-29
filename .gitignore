@@ -124,3 +124,5 @@ example.db
 
 # Pycharm Configs
 .idea/
+
+data/
