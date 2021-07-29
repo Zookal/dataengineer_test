@@ -27,6 +27,7 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./retail_etl/plugins:/opt/airflow/plugins
     - ./retail_etl/spark/app:/opt/spark/app  # For spark job scripts
+    - ./data:/opt/data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
     &airflow-common-depends-on
@@ -48,6 +49,23 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    volumes:
+      - postgres-db:/var/lib/postgres-db
+
+  mysql:
+    build:
+      context: ./services/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 5
+    restart: always
+    volumes:
+      - mysql-db:/var/lib/mysql-db
 
   airflow-webserver:
     <<: *airflow-common
@@ -195,4 +213,5 @@ services:
       - KAFKA_OPTS=-Dlog4j.configuration=file:/tmp/log4j.properties
 
 volumes:
-  postgres-db-volume:
+  postgres-db:
+  mysql-db:
