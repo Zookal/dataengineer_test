@@ -24,3 +24,6 @@ apache-airflow-providers-apache-spark==2.0.0
 # PySpark
 pyspark==3.0.1
 pyspark-stubs==3.0.0.post1
+
+# Kafka Python
+kafka-python>=1.4.4
