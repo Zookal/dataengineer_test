@@ -1,11 +1,17 @@
+from pathlib import Path
+
 from pyspark import SparkContext
+from pyspark.sql import SparkSession
 
 
-# Create spark context
-sc = SparkContext()
+sc = SparkContext(master="local[*]")
+conf = sc.getConf()
+
+spark = SparkSession.builder.config(conf=conf).appName("hello-world").getOrCreate()
 
 # Read file
-logData = sc.range(1, 10).count()
+region_data_path = Path(__file__).parent.parent.parent / "data" / "lineitem.tbl"
+print(region_data_path.exists(), "*****"*50)
+df = spark.read.option("header", False).csv(path=str(region_data_path), sep="|")
 
-# Print result
-print("Lines with a: {}".format(logData))
+print(df.count())

@@ -3,6 +3,10 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime, timedelta
 
+
+from custom_operators.data_sync_operator.data_sync_operator import DataSyncOperator
+
+
 ###############################################
 # Parameters
 ###############################################
@@ -48,4 +52,11 @@ spark_job = SparkSubmitOperator(
 
 end = DummyOperator(task_id="end", dag=dag)
 
-start >> spark_job >> end
+data_sync = DataSyncOperator(
+    task_id="data_sync",
+    mysql_conn_id="mysql_default",
+    create_table_script="",
+    dag=dag
+)
+
+start >> data_sync >> spark_job >> end
