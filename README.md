@@ -10,3 +10,5 @@ and Airflow ....
 #### Dev Notes:
 * Add Spark Kafka option: exactly once
 * Add execution datetime column in SQLite for batch parsing
+* Do .tbl -> SQLite? or .tbl -> Kafka? or SQLite -> Kafka?
+* Add Travis CI
