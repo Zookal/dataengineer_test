@@ -18,6 +18,8 @@ and Airflow ....
 #### Dev Notes:
 * All data source tables are created upon docker starts
 * Do .tbl -> SQLite? or .tbl -> Kafka? or SQLite -> Kafka?
+* You can change the logging level by modifying the AIRFLOW__CORE__LOGGING_LEVEL variable
+in the docker-compose.yml file
 
 # Common Errors
 * Volume data not found by docker-compose
