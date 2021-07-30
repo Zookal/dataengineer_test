@@ -18,6 +18,7 @@ x-airflow-common:
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     AIRFLOW__CORE__STORE_DAG_CODE: "true"
     AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "true"
+    AIRFLOW__CORE__LOGGING_LEVEL: "DEBUG"
   build:
     context: ./services/airflow
     args:
@@ -27,7 +28,7 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./retail_etl/plugins:/opt/airflow/plugins
     - ./retail_etl/spark/app:/opt/spark/app  # For spark job scripts
-    - ./data:/opt/data
+#    - ./data:/opt/data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
     &airflow-common-depends-on
@@ -50,7 +51,7 @@ services:
       retries: 5
     restart: always
     volumes:
-      - postgres-db:/var/lib/postgres-db
+      - psql-db:/var/lib/psql-db
 
   mysql:
     build:
@@ -213,5 +214,5 @@ services:
       - KAFKA_OPTS=-Dlog4j.configuration=file:/tmp/log4j.properties
 
 volumes:
-  postgres-db:
+  psql-db:
   mysql-db:
