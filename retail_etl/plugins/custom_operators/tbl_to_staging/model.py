@@ -18,7 +18,7 @@ class Header:
 
 @dataclass(init=False, frozen=True)
 class RegionHeader(Header):
-    r_region_key: Column = Column(name="r_region_key", data_type=int)
+    r_regionkey: Column = Column(name="r_region_key", data_type=int)
     r_name: Column = Column(name="r_name", data_type=Text)
     r_comment: Column = Column(name="r_comment", data_type=Optional[Text])
 
