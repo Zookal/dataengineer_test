@@ -5,10 +5,10 @@ from airflow.providers.mysql.hooks.mysql import MySqlHook
 
 
 class DataSyncOperator(BaseOperator):
-    def __init__(self, mysql_conn_id: str, create_table_script: str, *args, **kwargs):
+    def __init__(self, mysql_conn_id: str, insert_sql_query: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mysql_conn_id = mysql_conn_id
-        self.create_table_script = create_table_script
+        self.insert_sql_query = insert_sql_query
 
     def execute(self, context: Dict):
         self.log.info("DataSyncOperator Starting...")
