@@ -50,7 +50,7 @@ clean:
 
 # Run all Pre-commit Checks
 .PHONY: checklist
-checklist: black lint scan_security test clean
+checklist: black lint typehint scan_security test clean
 
 # Check Coverage Report
 .DEFAULT: ;: do nothing
