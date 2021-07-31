@@ -23,7 +23,7 @@ typehint:
 # Run all Test Suites under the tests folder
 .PHONY: test
 test:
-	 PYTHONPATH=. pytest tests -v -s
+	 pytest tests/ -vv -s
 
 # Format the code into black formatting
 .PHONY: black
@@ -38,7 +38,7 @@ lint:
 # Check for Security Vulnerabilities
 .PHONY: scan_security
 scan_security:
-	bandit -r $(COVERAGE_FOLDER)/
+	bandit -r $(COVERAGE_FOLDER) --skip B101
 
 # Clean up local development's cache data
 .PHONY: clean
@@ -49,7 +49,7 @@ clean:
 
 # Run all Pre-commit Checks
 .PHONY: checklist
-checklist: black lint typehint scan_security test clean
+checklist: black lint scan_security test clean
 
 # Check Coverage Report
 .DEFAULT: ;: do nothing
