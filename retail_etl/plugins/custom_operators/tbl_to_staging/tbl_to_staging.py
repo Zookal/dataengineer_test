@@ -6,9 +6,7 @@ from custom_operators.tbl_to_staging import helper
 
 
 class TblToStageOperator(BaseOperator):
-    def __init__(
-        self, pandas_read_args: Dict, data_load_args: Dict, *args, **kwargs
-    ):
+    def __init__(self, pandas_read_args: Dict, data_load_args: Dict, *args, **kwargs):
         """
         Operator to import a .tbl file to a MySQL database.
 
