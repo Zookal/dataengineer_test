@@ -6,6 +6,6 @@ def get_upsert_query():
     VALUES (
         %s, %s, %s
     )
-    ON DUPLICATE KEY UPDATE 
+    ON DUPLICATE KEY UPDATE
         r_regionkey = VALUES(r_regionkey), r_name = VALUES(r_name), r_comment = VALUES(r_comment)
     """
