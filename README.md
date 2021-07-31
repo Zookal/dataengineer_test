@@ -5,6 +5,7 @@ but ideally we can use Azure Databricks or AWS EMR in the production environment
 and Airflow ....
 
 #### TODO:
+* Create surrogate keys for DW
 * Add execution datetime column in SQLite for batch parsing
 * Add Travis CI
 * Add copy command for ddl.sql in data_gen.txt
