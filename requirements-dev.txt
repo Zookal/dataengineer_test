@@ -17,6 +17,9 @@ black==20.8b1
 # Security Check
 bandit==1.7.0
 
+# Static Type Check
+mypy==0.910
+
 # Airflow
 apache-airflow==2.1.0
 apache-airflow-providers-apache-spark==2.0.0
