@@ -8,7 +8,7 @@ from tests.retail_etl.dags.helper import dag_files, import_dag_file, get_retail_
 
 
 class RetailDagTaskDefTest:
-    EXPECTED_TASKS_COUNT = 3
+    EXPECTED_TASKS_COUNT = 9
     DAG_ID = "retail_dag"
     EXPECTED_TASKS = ["begin_execution", "region_tbl_to_staging_db", "end_execution"]
 
