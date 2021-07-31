@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from airflow.models import BaseOperator
 
@@ -19,7 +19,7 @@ class TblToStageOperator(BaseOperator):
         self._data_load_args = data_load_args
         self._pandas_read_args = pandas_read_args
 
-    def execute(self, context: Dict):
+    def execute(self, context: Optional[Dict]):
         self.log.info("TblToStageOperator Starting...")
 
         df_batches = helper.get_dataframe(**self._pandas_read_args)

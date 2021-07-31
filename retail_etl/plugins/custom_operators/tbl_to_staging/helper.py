@@ -81,7 +81,7 @@ def load_to_mysql_db(df_batches: TextFileReader, **data_load_args: Dict) -> int:
             total_inserted_rows += nrows
         except Exception:
             mysql_conn.rollback()
-            logger.debug(f"The TblToStageOperator process has failed {traceback.format_exc()}")
+            logger.error("The TblToStageOperator process has failed", exc_info=traceback.format_exc())
         finally:
             mysql_conn.commit()
     mysql_conn.close()
