@@ -25,3 +25,8 @@ in the docker-compose.yml file
 * Volume data not found by docker-compose
     * Make sure you already ran the data_gen.txt command.
     * docker system prune -a
+* pytest throws docker.errors.APIError
+    * This is due to unstable network connection with the docker server,
+      try running again the test again.
+    * Make sure airflow and other dependent services are down by running:
+    `docker-compose down`, then run the test again
