@@ -1,40 +1,23 @@
-import datetime
 import logging
 import os
-from pathlib import Path
 from collections import namedtuple
-from typing import Any
 
+from typing import Callable, Any
+
+import MySQLdb
 import pytest
 from _pytest.logging import LogCaptureFixture
-import MySQLdb
 from MySQLdb._exceptions import ProgrammingError
-from pytest_docker_tools import fetch, container
+from pytest_docker_tools import container, fetch
+from pytest_docker_tools.wrappers import Container
 from pytest_mock import MockFixture
 from airflow.providers.mysql.hooks.mysql import MySqlHook
-from airflow.models import DAG
 
-from retail_etl.plugins.custom_operators.tbl_to_staging.tbl_to_staging import TblToStageOperator
-from retail_etl.plugins.stage_queries import region as region_tbl_queries
-
-
-@pytest.fixture
-def test_dag():
-    return DAG(
-        dag_id="test_dag",
-        default_args={"owner": "airflow", "start_date": datetime.datetime(2015, 1, 1)},
-        schedule_interval="@daily",
-    )
-
-
-@pytest.fixture(scope="module")
-def mysql_credentials():
-    MySQLCredentials = namedtuple("MySQLCredentials", ["username", "password"])
-    return MySQLCredentials("testuser", "testpass")
+from tests.retail_etl.plugins.custom_operators.tbl_to_staging import helper
 
 
 mysql_image = fetch(repository="mysql:latest")
-mysql_session = container(
+mysql_container = container(
     image="{mysql_image.id}",
     environment={
         "MYSQL_DATABASE": "retail_test",
@@ -51,51 +34,36 @@ mysql_session = container(
 )
 
 
+@pytest.fixture(scope="module")
+def mysql_credentials():
+    MySQLCredentials = namedtuple("MySQLCredentials", ["username", "password"])
+    return MySQLCredentials("testuser", "testpass")
+
+
+@pytest.fixture
+def mysql_connection(mysql_credentials: Any, mysql_container: Container) -> MySQLdb.Connection:
+    yield lambda: MySQLdb.connect(
+        user=mysql_credentials.username,
+        password=mysql_credentials.password,
+        host="127.0.0.1",
+        database="retail_test",
+        port=mysql_container.ports["3306/tcp"][0],
+    )
+
+
 class TblToStagingTest:
     @staticmethod
-    def test_operator_can_read_data_and_load_to_mysql(
-        mysql_credentials: Any, mocker: MockFixture, mysql_session, test_dag: DAG
-    ):
+    def test_operator_can_read_data_and_load_to_mysql(mocker: MockFixture, mysql_connection: Callable):
         # GIVEN
-        connection = MySQLdb.connect(
-            user=mysql_credentials.username,
-            password=mysql_credentials.password,
-            host="127.0.0.1",
-            database="retail_test",
-            port=mysql_session.ports["3306/tcp"][0],
-        )
+        connection = mysql_connection()
         mocker.patch.object(target=MySqlHook, attribute="get_conn", return_value=connection)
-        task = TblToStageOperator(
-            task_id="region_tbl_to_staging_db",
-            pandas_read_args={
-                # TODO: Put in Airflow Vars.
-                "filepath_or_buffer": Path(__file__).parent / "test_data" / "region.tbl",
-                "chunksize": 10000,
-                "sep": "|",
-                "iterator": True,
-                "table_name": "region",
-            },
-            data_load_args={
-                "mysql_conn_id": "mysql",
-                "table_name": "region",
-                "upsert_query": region_tbl_queries.get_upsert_query(),
-                "logger_name": "airflow.task",
-            },
-            dag=test_dag,
-        )
+        task = helper.get_valid_region_tbl_to_staging_db()
 
         # WHEN
         task.execute(context=None)
 
         # THEN
-        connection = MySQLdb.connect(
-            user=mysql_credentials.username,
-            password=mysql_credentials.password,
-            host="127.0.0.1",
-            database="retail_test",
-            port=mysql_session.ports["3306/tcp"][0],
-        )
-
+        connection = mysql_connection()
         cursor = connection.cursor()
         cursor.execute("SELECT COUNT(*) FROM region;")
         result = cursor.fetchone()[0]
@@ -103,35 +71,12 @@ class TblToStagingTest:
 
     @staticmethod
     def test_operator_is_resilient_to_invalid_data_format(
-        mysql_credentials: Any, mocker: MockFixture, mysql_session, test_dag: DAG, caplog: LogCaptureFixture
+        mocker: MockFixture, caplog: LogCaptureFixture, mysql_connection: Callable
     ):
         # GIVEN
-        connection = MySQLdb.connect(
-            user=mysql_credentials.username,
-            password=mysql_credentials.password,
-            host="127.0.0.1",
-            database="retail_test",
-            port=mysql_session.ports["3306/tcp"][0],
-        )
+        connection = mysql_connection()
         mocker.patch.object(target=MySqlHook, attribute="get_conn", return_value=connection)
-        task = TblToStageOperator(
-            task_id="region_tbl_to_staging_db",
-            pandas_read_args={
-                # TODO: Put in Airflow Vars.
-                "filepath_or_buffer": Path(__file__).parent / "test_data" / "invalid_format_region.tbl",
-                "chunksize": 10000,
-                "sep": "|",
-                "iterator": True,
-                "table_name": "region",
-            },
-            data_load_args={
-                "mysql_conn_id": "mysql",
-                "table_name": "region",
-                "upsert_query": region_tbl_queries.get_upsert_query(),
-                "logger_name": "airflow.task",
-            },
-            dag=test_dag,
-        )
+        task = helper.get_invalid_region_tbl_to_stage_operator()
 
         # WHEN
         logging.getLogger("airflow.task").propagate = True
@@ -144,35 +89,12 @@ class TblToStagingTest:
 
     @staticmethod
     def test_operator_is_resilient_to_invalid_sql_query(
-        mysql_credentials: Any, mocker: MockFixture, mysql_session, test_dag: DAG, caplog: LogCaptureFixture
+        mocker: MockFixture, caplog: LogCaptureFixture, mysql_connection: Callable
     ):
         # GIVEN
-        connection = MySQLdb.connect(
-            user=mysql_credentials.username,
-            password=mysql_credentials.password,
-            host="127.0.0.1",
-            database="retail_test",
-            port=mysql_session.ports["3306/tcp"][0],
-        )
+        connection = mysql_connection()
         mocker.patch.object(target=MySqlHook, attribute="get_conn", return_value=connection)
-        task = TblToStageOperator(
-            task_id="region_tbl_to_staging_db",
-            pandas_read_args={
-                # TODO: Put in Airflow Vars.
-                "filepath_or_buffer": Path(__file__).parent / "test_data" / "region.tbl",
-                "chunksize": 10000,
-                "sep": "|",
-                "iterator": True,
-                "table_name": "region",
-            },
-            data_load_args={
-                "mysql_conn_id": "mysql",
-                "table_name": "region",
-                "upsert_query": "INSERT INTO ... INVALID ...",
-                "logger_name": "airflow.task",
-            },
-            dag=test_dag,
-        )
+        task = helper.get_valid_region_tbl_to_staging_db(use_valid_query=False)
 
         # WHEN
         logging.getLogger("airflow.task").propagate = True
@@ -182,3 +104,23 @@ class TblToStagingTest:
             assert caplog.records[0].message == "The TblToStageOperator process has failed"
             assert isinstance(caplog.records[0].exc_info[1], ProgrammingError)
             assert str(caplog.records[0].exc_info[1]) == "not all arguments converted during bytes formatting"
+
+    @staticmethod
+    def test_operator_is_idempotent(mocker: MockFixture, mysql_connection: Callable):
+        # GIVEN
+        connection = mysql_connection()
+        mocker.patch.object(target=MySqlHook, attribute="get_conn", return_value=connection)
+        task = helper.get_valid_region_tbl_to_staging_db()
+
+        # WHEN
+        task.execute(context=None)
+        connection = mysql_connection()
+        mocker.patch.object(target=MySqlHook, attribute="get_conn", return_value=connection)
+        task.execute(context=None)
+
+        # THEN
+        connection = mysql_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT COUNT(*) FROM region;")
+        result = cursor.fetchone()[0]
+        assert result == 5
