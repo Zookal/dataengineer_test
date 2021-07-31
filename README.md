@@ -24,3 +24,4 @@ in the docker-compose.yml file
 # Common Errors
 * Volume data not found by docker-compose
     * Make sure you already ran the data_gen.txt command.
+    * docker system prune -a
