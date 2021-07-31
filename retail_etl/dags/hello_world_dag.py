@@ -4,9 +4,6 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
 from datetime import datetime, timedelta
 
 
-from custom_operators.data_sync_operator.data_sync_operator import DataSyncOperator
-
-
 ###############################################
 # Parameters
 ###############################################
