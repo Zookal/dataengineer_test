@@ -19,7 +19,6 @@ RUN pip install --user --no-cache-dir \
     pyspark==3.0.1 \
     apache-airflow-providers-apache-spark==2.0.0 \
     apache-airflow-providers-mysql==2.0.0 \
-    kafka-python>=1.4.4 \
     mysql-connector-python==8.0.11 \
     mysqlclient==2.0.3
 
