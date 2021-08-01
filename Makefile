@@ -1,5 +1,5 @@
 # Variable Declaration
-COVERAGE_FOLDER := retail_etl
+COVERAGE_FOLDER := retail_etl tests/
 KNOWN_TARGETS = cov_report
 ARGS := $(filter-out $(KNOWN_TARGETS),$(MAKECMDGOALS))
 
@@ -18,12 +18,12 @@ PYTHON=python3.9
 # Check for Type Hint inconsistencies
 .PHONY: typehint
 typehint:
-	mypy --ignore-missing-imports $(COVERAGE_FOLDER)
+	mypy $(COVERAGE_FOLDER)
 
 # Run all Test Suites under the tests folder
 .PHONY: test
 test:
-	 PYTHONPATH=. pytest tests -v -s
+	 pytest tests/
 
 # Format the code into black formatting
 .PHONY: black
@@ -38,14 +38,13 @@ lint:
 # Check for Security Vulnerabilities
 .PHONY: scan_security
 scan_security:
-	bandit $(COVERAGE_FOLDER)
+	bandit -r $(COVERAGE_FOLDER) --skip B101
 
 # Clean up local development's cache data
 .PHONY: clean
 clean:
 	find . -type f -name "*.pyc" | xargs rm -fr
 	find . -type d -name __pycache__ | xargs rm -fr
-	find . -type d -name .mypy_cache | xargs rm -fr
 	find . -type d -name .pytest_cache | xargs rm -fr
 
 # Run all Pre-commit Checks
