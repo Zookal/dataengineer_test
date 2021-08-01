@@ -26,7 +26,6 @@ x-airflow-common:
     - ./retail_etl/dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./retail_etl/plugins:/opt/airflow/plugins
-    - ./retail_etl/spark/app:/opt/spark/app  # For spark job scripts
     - ./data:/opt/data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
