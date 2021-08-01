@@ -16,7 +16,7 @@ USER airflow
 
 RUN pip install --user --no-cache-dir \
     pandas==1.1.4 \
-    apache-airflow-providers-apache-spark==2.0.0 \
+    apache-airflow-providers-postgres==2.0.0 \
     apache-airflow-providers-mysql==2.0.0 \
     mysql-connector-python==8.0.11 \
     mysqlclient==2.0.3

@@ -8,7 +8,7 @@ pytest-mock==3.6.1
 pandas==1.1.4
 
 # Typehints
-mypy==0.790
+mypy==0.910
 
 # Lints
 flake8==3.8.4
@@ -24,7 +24,7 @@ mypy==0.910
 
 # Airflow
 apache-airflow==2.1.0
-apache-airflow-providers-apache-spark==2.0.0
+apache-airflow-providers-postgres==2.0.0
 apache-airflow-providers-mysql==2.0.0
 
 # Kafka Python

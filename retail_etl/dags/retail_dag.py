@@ -7,6 +7,7 @@ from airflow.operators.dummy import DummyOperator
 
 from stage_queries.helper import get_table_upsert_query
 from custom_operators.tbl_to_staging.tbl_to_staging import TblToStageOperator
+from custom_operators.postgres_dw_operator.postgres_dw_operator import PostgresDwOperator
 
 _SIMULATED_DATA_FOLDER = Path(__file__).parent.parent.parent / "data"
 _NOW = datetime.now()
@@ -189,6 +190,13 @@ lineitem_tbl_to_staging_db = TblToStageOperator(
     dag=dag,
 )
 
+dim_part_to_postgres_dw = PostgresDwOperator(
+    task_id="dim_part_to_postgres_dw",
+    mysql_read_config={"mysql_conn_id": "mysql_default"},
+    postgres_load_config={},
+    dag=dag
+)
+
 # staging_tables = ["part", "customer", "region", "nation", "supplier", "partsupp", "order", "lineitem"]
 
 end_execution = DummyOperator(task_id="end_execution", dag=dag)
@@ -206,4 +214,5 @@ supplier_tbl_to_staging_db.set_downstream(partsupp_tbl_to_staging_db)
 part_tbl_to_staging_db.set_downstream(partsupp_tbl_to_staging_db)
 orders_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
 partsupp_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
-lineitem_tbl_to_staging_db.set_downstream(end_execution)
+lineitem_tbl_to_staging_db.set_downstream(dim_part_to_postgres_dw)
+dim_part_to_postgres_dw.set_downstream(end_execution)

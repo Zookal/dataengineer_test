@@ -66,6 +66,23 @@ services:
     volumes:
       - mysql-db:/var/lib/mysql-db
 
+  postgres_dw:
+    build:
+      context: ./services/postgres_dw
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=retail_etl_dw
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "user" ]
+      interval: 5s
+      retries: 5
+    restart: always
+    volumes:
+      - psql-dw:/var/lib/psql-dw
+
   airflow-webserver:
     <<: *airflow-common
     command: webserver
@@ -109,3 +126,4 @@ services:
 volumes:
   psql-db:
   mysql-db:
+  psql-dw:
