@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List
 
 import airflow.utils.dates
 from airflow.models import DAG
@@ -19,38 +18,8 @@ _DEFAULT_ARGS = {
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
-    "retry_delay": timedelta(minutes=1),
+    "retry_delay": timedelta(minutes=1)
 }
-
-
-def _generate_tbl_to_storage_tasks(sql_tables: List[str]):
-    """TblToStageOperator factory function.
-
-    Each tasks have a fixed batch size of 10,000 which can be modified.
-
-    :param sql_tables: The SQL table names to be populated by the TblToStageOperator.
-    :return: Iterable, which contains TblToStageOperator for each sql_tables
-    """
-    for table in sql_tables:
-        task = TblToStageOperator(
-            task_id=f"{table}_tbl_to_staging_db",
-            pandas_read_args={
-                # TODO: Put in Airflow Vars.
-                "filepath_or_buffer": _SIMULATED_DATA_FOLDER / f"{table}.tbl",
-                "chunksize": 10000,
-                "sep": "|",
-                "iterator": True,
-                "table_name": table,
-            },
-            data_load_args={
-                "mysql_conn_id": "mysql_default",
-                "table_name": table,
-                "upsert_query": get_table_upsert_query(table_name=table),
-                "logger_name": "airflow.task",
-            },
-            dag=dag,
-        )
-        yield task
 
 
 dag = DAG(
@@ -67,14 +36,175 @@ dag = DAG(
 #          OPERATOR DEFINITIONS         #
 #########################################
 begin_execution = DummyOperator(task_id="begin_execution", dag=dag)
-tbl_to_staging_db_tasks = _generate_tbl_to_storage_tasks(
-    sql_tables=["region", "nation", "part", "customer", "supplier" "order", "partsupp", "lineitem"]
-)
-end_execution = DummyOperator(task_id="end_execution", dag=dag)
 
+region_tbl_to_staging_db = TblToStageOperator(
+    task_id="region_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "region.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "region",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "region",
+        "upsert_query": get_table_upsert_query(table_name="region"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+nation_tbl_to_staging_db = TblToStageOperator(
+    task_id="nation_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "nation.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "nation",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "nation",
+        "upsert_query": get_table_upsert_query(table_name="nation"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+part_tbl_to_staging_db = TblToStageOperator(
+    task_id="part_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "part.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "part",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "part",
+        "upsert_query": get_table_upsert_query(table_name="part"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+supplier_tbl_to_staging_db = TblToStageOperator(
+    task_id="supplier_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "supplier.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "supplier",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "supplier",
+        "upsert_query": get_table_upsert_query(table_name="supplier"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+partsupp_tbl_to_staging_db = TblToStageOperator(
+    task_id="partsupp_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "partsupp.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "partsupp",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "partsupp",
+        "upsert_query": get_table_upsert_query(table_name="partsupp"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+customer_tbl_to_staging_db = TblToStageOperator(
+    task_id="customer_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "customer.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "customer",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "customer",
+        "upsert_query": get_table_upsert_query(table_name="customer"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+orders_tbl_to_staging_db = TblToStageOperator(
+    task_id="orders_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "orders.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "orders",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "orders",
+        "upsert_query": get_table_upsert_query(table_name="orders"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+lineitem_tbl_to_staging_db = TblToStageOperator(
+    task_id=f"lineitem_tbl_to_staging_db",
+    pandas_read_args={
+        # TODO: Put in Airflow Vars.
+        "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "lineitem.tbl",
+        "chunksize": 10000,
+        "sep": "|",
+        "iterator": True,
+        "table_name": "lineitem",
+    },
+    data_load_args={
+        "mysql_conn_id": "mysql_default",
+        "table_name": "lineitem",
+        "upsert_query": get_table_upsert_query(table_name="lineitem"),
+        "logger_name": "airflow.task"
+    },
+    dag=dag,
+)
+
+# staging_tables = ["part", "customer", "region", "nation", "supplier", "partsupp", "order", "lineitem"]
+
+end_execution = DummyOperator(task_id="end_execution", dag=dag)
 
 #########################################
 #           NODE CONNECTIONS            #
 #########################################
-begin_execution.set_downstream(task_or_task_list=list(tbl_to_staging_db_tasks))
-end_execution.set_upstream(task_or_task_list=list(tbl_to_staging_db_tasks))
+begin_execution.set_downstream(region_tbl_to_staging_db)
+region_tbl_to_staging_db.set_downstream(nation_tbl_to_staging_db)
+nation_tbl_to_staging_db.set_downstream(
+    [customer_tbl_to_staging_db, supplier_tbl_to_staging_db, part_tbl_to_staging_db]
+)
+customer_tbl_to_staging_db.set_downstream(orders_tbl_to_staging_db)
+supplier_tbl_to_staging_db.set_downstream(partsupp_tbl_to_staging_db)
+part_tbl_to_staging_db.set_downstream(partsupp_tbl_to_staging_db)
+orders_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
+partsupp_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
+lineitem_tbl_to_staging_db.set_downstream(end_execution)
+
