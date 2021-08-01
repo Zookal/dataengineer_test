@@ -1,5 +1,4 @@
 import traceback
-from datetime import timedelta
 from typing import Dict, Union, Optional
 import logging
 
@@ -59,7 +58,9 @@ def get_dataframe(table_name: str, **pandas_read_args: Dict) -> TextFileReader:
     return pd.read_csv(**pandas_read_args, names=columns, usecols=columns)
 
 
-def load_to_mysql_db(df_batches: TextFileReader, execution_ts: pendulum.DateTime, **data_load_args: Dict) -> int:
+def load_to_mysql_db(
+    df_batches: TextFileReader, execution_ts: pendulum.DateTime, **data_load_args: Dict
+) -> int:
     """
     Loads batches of data to MySQL Database.
 
@@ -74,7 +75,7 @@ def load_to_mysql_db(df_batches: TextFileReader, execution_ts: pendulum.DateTime
     logger = _get_logger(logger_name=data_load_args.get("logger_name"))
     mysql_conn = _create_mysql_connection(mysql_conn_id=data_load_args.get("mysql_conn_id"))
     mysql_cursor = mysql_conn.cursor()
-    table_name = data_load_args.get('table_name')
+    table_name = data_load_args.get("table_name")
     total_inserted_rows = 0
     for idx, _df in enumerate(df_batches):  # type: int, pd.DataFrame
         nrows = len(_df)

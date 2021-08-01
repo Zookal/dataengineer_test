@@ -1,4 +1,4 @@
-from datetime import date as date, datetime
+from datetime import date as date
 
 from dataclasses import dataclass
 from typing import Optional, Text

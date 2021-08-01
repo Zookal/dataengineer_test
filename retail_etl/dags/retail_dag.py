@@ -18,7 +18,7 @@ _DEFAULT_ARGS = {
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
-    "retry_delay": timedelta(minutes=1)
+    "retry_delay": timedelta(minutes=1),
 }
 
 
@@ -51,7 +51,7 @@ region_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "region",
         "upsert_query": get_table_upsert_query(table_name="region"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -70,7 +70,7 @@ nation_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "nation",
         "upsert_query": get_table_upsert_query(table_name="nation"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -89,7 +89,7 @@ part_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "part",
         "upsert_query": get_table_upsert_query(table_name="part"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -108,7 +108,7 @@ supplier_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "supplier",
         "upsert_query": get_table_upsert_query(table_name="supplier"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -127,7 +127,7 @@ partsupp_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "partsupp",
         "upsert_query": get_table_upsert_query(table_name="partsupp"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -146,7 +146,7 @@ customer_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "customer",
         "upsert_query": get_table_upsert_query(table_name="customer"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -165,13 +165,13 @@ orders_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "orders",
         "upsert_query": get_table_upsert_query(table_name="orders"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
 
 lineitem_tbl_to_staging_db = TblToStageOperator(
-    task_id=f"lineitem_tbl_to_staging_db",
+    task_id="lineitem_tbl_to_staging_db",
     pandas_read_args={
         # TODO: Put in Airflow Vars.
         "filepath_or_buffer": _SIMULATED_DATA_FOLDER / "lineitem.tbl",
@@ -184,7 +184,7 @@ lineitem_tbl_to_staging_db = TblToStageOperator(
         "mysql_conn_id": "mysql_default",
         "table_name": "lineitem",
         "upsert_query": get_table_upsert_query(table_name="lineitem"),
-        "logger_name": "airflow.task"
+        "logger_name": "airflow.task",
     },
     dag=dag,
 )
@@ -207,4 +207,3 @@ part_tbl_to_staging_db.set_downstream(partsupp_tbl_to_staging_db)
 orders_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
 partsupp_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
 lineitem_tbl_to_staging_db.set_downstream(end_execution)
-
