@@ -23,7 +23,9 @@ class TblToStageOperator(BaseOperator):
         self.log.info("TblToStageOperator Starting...")
 
         df_batches = helper.get_dataframe(**self._pandas_read_args)
-        total_inserted_rows = helper.load_to_mysql_db(**self._data_load_args, df_batches=df_batches)
+        total_inserted_rows = helper.load_to_mysql_db(
+            **self._data_load_args, df_batches=df_batches, execution_ts=context.get("execution_date")
+        )
         table_name = self._data_load_args.get("table_name")
 
         self.log.info(f"Finished Loading {total_inserted_rows} rows in the {table_name} table.")
