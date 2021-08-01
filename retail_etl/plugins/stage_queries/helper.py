@@ -1,3 +1,5 @@
+from typing import Optional
+
 from stage_queries.region import get_upsert_query as _get_region_upsert_query
 from stage_queries.customer import get_upsert_query as _get_customer_upsert_query
 from stage_queries.order import get_upsert_query as _get_order_upsert_query
@@ -19,6 +21,6 @@ _UPSERT_QUERIES = {
 }
 
 
-def get_table_upsert_query(table_name: str) -> str:
+def get_table_upsert_query(table_name: str) -> Optional[str]:
     """Get the Upsert SQL Query for a given table name."""
     return _UPSERT_QUERIES.get(table_name)
