@@ -23,7 +23,7 @@ typehint:
 # Run all Test Suites under the tests folder
 .PHONY: test
 test:
-	 pytest tests/ -vv -s
+	 pytest tests/
 
 # Format the code into black formatting
 .PHONY: black
