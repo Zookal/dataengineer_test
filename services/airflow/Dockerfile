@@ -16,10 +16,7 @@ USER airflow
 
 RUN pip install --user --no-cache-dir \
     pandas==1.1.4 \
-    pyspark==3.0.1 \
     apache-airflow-providers-apache-spark==2.0.0 \
     apache-airflow-providers-mysql==2.0.0 \
     mysql-connector-python==8.0.11 \
     mysqlclient==2.0.3
-
-# DO I STILL NEED THESE MySQL Packages?
