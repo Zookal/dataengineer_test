@@ -76,7 +76,7 @@ services:
     ports:
       - "5435:5432"
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "user" ]
+      test: [ "CMD", "pg_isready", "-U", "user", "retail_etl_dw" ]
       interval: 5s
       retries: 5
     restart: always
