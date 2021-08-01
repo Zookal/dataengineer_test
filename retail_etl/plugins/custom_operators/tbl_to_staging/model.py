@@ -1,4 +1,4 @@
-from datetime import date as date
+from datetime import date as date, datetime
 
 from dataclasses import dataclass
 from typing import Optional, Text
@@ -46,13 +46,13 @@ class PartHeader(Header):
 
 @dataclass(init=False, frozen=True)
 class SupplierHeader(Header):
-    s_suppkey: Column = Column(name="p_partkey", data_type=int)
-    s_name: Column = Column(name="p_name", data_type=Text)
-    s_address: Column = Column(name="p_mfgr", data_type=Text)
-    s_nationkey: Column = Column(name="p_brand", data_type=int)
-    s_phone: Column = Column(name="p_type", data_type=Text)
-    s_acctbal: Column = Column(name="p_size", data_type=int)
-    s_comment: Column = Column(name="p_container", data_type=Text)
+    s_suppkey: Column = Column(name="s_suppkey", data_type=int)
+    s_name: Column = Column(name="s_name", data_type=Text)
+    s_address: Column = Column(name="s_address", data_type=Text)
+    s_nationkey: Column = Column(name="s_nationkey", data_type=int)
+    s_phone: Column = Column(name="s_phone", data_type=Text)
+    s_acctbal: Column = Column(name="s_acctbal", data_type=int)
+    s_comment: Column = Column(name="s_comment", data_type=Text)
 
 
 @dataclass(init=False, frozen=True)
