@@ -8,7 +8,6 @@ x-airflow-common:
   image: *airflow_image
   environment:
     &airflow-common-env
-    AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -18,6 +17,7 @@ x-airflow-common:
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
     AIRFLOW__CORE__STORE_DAG_CODE: "true"
     AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "true"
+#    AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
   build:
     context: ./services/airflow
     args:
@@ -27,6 +27,7 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./retail_etl/plugins:/opt/airflow/plugins
     - ./retail_etl/spark/app:/opt/spark/app  # For spark job scripts
+    - ./data:/opt/data
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
     &airflow-common-depends-on
@@ -36,7 +37,7 @@ x-airflow-common:
 
 services:
   postgres:
-    image: postgres:12-alpine
+    image: postgres:13-alpine
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
@@ -48,6 +49,23 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    volumes:
+      - psql-db:/var/lib/psql-db
+
+  mysql:
+    build:
+      context: ./services/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 5
+    restart: always
+    volumes:
+      - mysql-db:/var/lib/mysql-db
 
   airflow-webserver:
     <<: *airflow-common
@@ -88,19 +106,6 @@ services:
       _AIRFLOW_WWW_USER_CREATE: "true"
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
-
-  airflow-cli:
-    <<: *airflow-common
-    profiles:
-      - debug
-    environment:
-      <<: *airflow-common-env
-      CONNECTION_CHECK_MAX_COUNT: "0"
-    # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
-    command:
-      - bash
-      - -c
-      - airflow
 
   # Spark with 3 workers
   spark:
@@ -171,4 +176,5 @@ services:
       - ./retail_etl/spark/app:/opt/spark/app
 
 volumes:
-  postgres-db-volume:
+  psql-db:
+  mysql-db:
