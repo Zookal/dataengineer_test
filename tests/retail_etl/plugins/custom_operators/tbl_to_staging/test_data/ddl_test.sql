@@ -2,8 +2,10 @@ CREATE DATABASE IF NOT EXISTS retail_test;
 
 USE retail_test;
 
-CREATE TABLE region (
+CREATE TABLE IF NOT EXISTS region (
   r_regionkey INTEGER PRIMARY KEY NOT NULL,
   r_name      TEXT NOT NULL,
-  r_comment   TEXT
+  r_comment   TEXT,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

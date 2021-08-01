@@ -24,7 +24,9 @@ def get_retail_dag_task_hierarchy() -> List[Dict]:
             "task": "nation_tbl_to_staging_db",
             "expected_upstream": ["region_tbl_to_staging_db"],
             "expected_downstream": [
-                "customer_tbl_to_staging_db", "supplier_tbl_to_staging_db", "part_tbl_to_staging_db"
+                "customer_tbl_to_staging_db",
+                "supplier_tbl_to_staging_db",
+                "part_tbl_to_staging_db",
             ],
         },
         {

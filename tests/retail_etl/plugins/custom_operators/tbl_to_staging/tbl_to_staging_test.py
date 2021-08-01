@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 from collections import namedtuple
@@ -60,7 +61,7 @@ class TblToStagingTest:
         task = helper.get_valid_region_tbl_to_staging_db()
 
         # WHEN
-        task.execute(context=None)
+        task.execute(context={"execution_date": datetime.datetime.now().isoformat()})
 
         # THEN
         connection = mysql_connection()
@@ -81,7 +82,7 @@ class TblToStagingTest:
         # WHEN
         logging.getLogger("airflow.task").propagate = True
         with caplog.at_level(logging.ERROR):
-            task.execute(context=None)
+            task.execute(context={"execution_date": datetime.datetime.now().isoformat()})
             # THEN
             assert caplog.records[0].message == "The TblToStageOperator process has failed"
             assert isinstance(caplog.records[0].exc_info[1], ProgrammingError)
@@ -99,7 +100,7 @@ class TblToStagingTest:
         # WHEN
         logging.getLogger("airflow.task").propagate = True
         with caplog.at_level(logging.ERROR):
-            task.execute(context=None)
+            task.execute(context={"execution_date": datetime.datetime.now().isoformat()})
             # THEN
             assert caplog.records[0].message == "The TblToStageOperator process has failed"
             assert isinstance(caplog.records[0].exc_info[1], ProgrammingError)
@@ -113,10 +114,10 @@ class TblToStagingTest:
         task = helper.get_valid_region_tbl_to_staging_db()
 
         # WHEN
-        task.execute(context=None)
+        task.execute(context={"execution_date": datetime.datetime.now().isoformat()})
         connection = mysql_connection()
         mocker.patch.object(target=MySqlHook, attribute="get_conn", return_value=connection)
-        task.execute(context=None)
+        task.execute(context={"execution_date": datetime.datetime.now().isoformat()})
 
         # THEN
         connection = mysql_connection()
