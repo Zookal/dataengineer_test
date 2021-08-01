@@ -18,11 +18,48 @@ def get_retail_dag_task_hierarchy() -> List[Dict]:
         {
             "task": "region_tbl_to_staging_db",
             "expected_upstream": ["begin_execution"],
+            "expected_downstream": ["nation_tbl_to_staging_db"],
+        },
+        {
+            "task": "nation_tbl_to_staging_db",
+            "expected_upstream": ["region_tbl_to_staging_db"],
+            "expected_downstream": [
+                "customer_tbl_to_staging_db", "supplier_tbl_to_staging_db", "part_tbl_to_staging_db"
+            ],
+        },
+        {
+            "task": "customer_tbl_to_staging_db",
+            "expected_upstream": ["nation_tbl_to_staging_db"],
+            "expected_downstream": ["orders_tbl_to_staging_db"],
+        },
+        {
+            "task": "supplier_tbl_to_staging_db",
+            "expected_upstream": ["nation_tbl_to_staging_db"],
+            "expected_downstream": ["partsupp_tbl_to_staging_db"],
+        },
+        {
+            "task": "part_tbl_to_staging_db",
+            "expected_upstream": ["nation_tbl_to_staging_db"],
+            "expected_downstream": ["partsupp_tbl_to_staging_db"],
+        },
+        {
+            "task": "partsupp_tbl_to_staging_db",
+            "expected_upstream": ["supplier_tbl_to_staging_db", "part_tbl_to_staging_db"],
+            "expected_downstream": ["lineitem_tbl_to_staging_db"],
+        },
+        {
+            "task": "orders_tbl_to_staging_db",
+            "expected_upstream": ["customer_tbl_to_staging_db"],
+            "expected_downstream": ["lineitem_tbl_to_staging_db"],
+        },
+        {
+            "task": "lineitem_tbl_to_staging_db",
+            "expected_upstream": ["orders_tbl_to_staging_db", "partsupp_tbl_to_staging_db"],
             "expected_downstream": ["end_execution"],
         },
         {
             "task": "end_execution",
-            "expected_upstream": ["region_tbl_to_staging_db"],
+            "expected_upstream": ["lineitem_tbl_to_staging_db"],
             "expected_downstream": [],
         },
     ]

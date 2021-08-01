@@ -8,9 +8,20 @@ from tests.retail_etl.dags.helper import dag_files, import_dag_file, get_retail_
 
 
 class RetailDagTaskDefTest:
-    EXPECTED_TASKS_COUNT = 9
+    EXPECTED_TASKS_COUNT = 10
     DAG_ID = "retail_dag"
-    EXPECTED_TASKS = ["begin_execution", "region_tbl_to_staging_db", "end_execution"]
+    EXPECTED_TASKS = [
+        "begin_execution",
+        "region_tbl_to_staging_db",
+        "nation_tbl_to_staging_db",
+        "part_tbl_to_staging_db",
+        "supplier_tbl_to_staging_db",
+        "partsupp_tbl_to_staging_db",
+        "customer_tbl_to_staging_db",
+        "orders_tbl_to_staging_db",
+        "lineitem_tbl_to_staging_db",
+        "end_execution",
+    ]
 
     @staticmethod
     def test_dag_task_count_is_correct(retail_dag: DAG):

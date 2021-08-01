@@ -37,6 +37,6 @@ class DagIntegrityTest:
             emails = dag.default_args.get("email", [])
             num_retries = dag.default_args.get("retries", None)
             retry_delay_sec = dag.default_args.get("retry_delay", None)
-            assert emails == ["1byteyoda@makr.dev"]
+            assert emails == ["dmc.markr@gmail.com"]
             assert num_retries is not None
             assert retry_delay_sec is not None
