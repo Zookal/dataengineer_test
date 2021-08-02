@@ -95,7 +95,7 @@ SELECT
     CASE
         WHEN prev_period.d_yearmonth IS NULL
             THEN 'N/A' ELSE prev_period.d_yearmonth
-        END AS prev_d_yearmonth,
+    END AS prev_d_yearmonth,
     CASE
         WHEN prev_period.avg_revenue IS NULL
             THEN 0
