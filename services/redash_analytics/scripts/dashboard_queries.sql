@@ -63,7 +63,7 @@ SELECT
 FROM fact_lineitem AS l
 JOIN dim_customer AS c ON c.c_custkey = l.l_custkey
 GROUP BY c.c_custkey
-ORDER BY avg_quantity DESC
+ORDER BY avg_revenue DESC
 LIMIT 5;
 -------------------------------------------------
 
@@ -94,7 +94,8 @@ SELECT
     current_period.avg_revenue AS current_avg_revenue,
     CASE
         WHEN prev_period.d_yearmonth IS NULL
-            THEN 'N/A' ELSE prev_period.d_yearmonth
+            THEN 'N/A'
+        ELSE prev_period.d_yearmonth
     END AS prev_d_yearmonth,
     CASE
         WHEN prev_period.avg_revenue IS NULL
