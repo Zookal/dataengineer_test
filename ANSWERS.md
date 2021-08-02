@@ -66,8 +66,7 @@ pipeline runs ie. by using cron pattern
 
 ### Data Reporting
 For the data reporting part, I've created SQL queries inside the 
-[dashboard_queries.sql](https://github.
-com/1byte-yoda/dataengineer_test-1/blob/develop/services/redash_analytics/scripts/dashboard_queries.sql) file.
+[dashboard_queries.sql](https://github.com/1byte-yoda/dataengineer_test-1/blob/develop/services/redash_analytics/scripts/dashboard_queries.sql) file.
 Please check it for more information.
 
 ### Data Profiling
