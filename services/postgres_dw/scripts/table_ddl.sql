@@ -110,6 +110,12 @@ CREATE TRIGGER update_dim_part_updated_at
     FOR EACH ROW
     EXECUTE PROCEDURE update_updated_at_column();
 
+CREATE TRIGGER update_dim_supplier_updated_at
+    BEFORE UPDATE
+    ON dim_supplier
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_updated_at_column();
+
 CREATE TRIGGER update_dim_customer_updated_at
     BEFORE UPDATE
     ON dim_customer
