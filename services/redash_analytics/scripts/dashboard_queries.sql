@@ -91,12 +91,12 @@ LIMIT 5;
 -------------------------------------------------
 SELECT
     current_period.d_yearmonth,
-    current_period.avg_revenue AS current_avg_revenue,
+    current_period.avg_revenue AS current_period_avg_revenue,
     CASE
         WHEN prev_period.d_yearmonth IS NULL
             THEN 'N/A'
         ELSE prev_period.d_yearmonth
-    END AS prev_d_yearmonth,
+    END AS prev_period_d_yearmonth,
     CASE
         WHEN prev_period.avg_revenue IS NULL
             THEN 0
@@ -111,7 +111,7 @@ FROM (
     JOIN dim_date AS d ON d.d_datekey = l.l_orderdatekey
     WHERE d_year = 1997
     GROUP BY d_month, d_yearmonth
-) AS current_period
+) AS prev_period
 LEFT JOIN (
     SELECT
         ROUND(AVG(l_revenue), 2) AS avg_revenue,
@@ -121,5 +121,5 @@ LEFT JOIN (
     JOIN dim_date AS d ON d.d_datekey = l.l_orderdatekey
     WHERE d_year = 1998
     GROUP BY d_month, d_yearmonth
-) AS prev_period ON prev_period.d_month = current_period.d_month
+) AS current_period ON current_period.d_month = prev_period.d_month
 ORDER BY d_yearmonth;
