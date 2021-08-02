@@ -6,18 +6,8 @@ x-airflow-image: &airflow_image apache/airflow:2.1.0-python3.6
 x-airflow-common:
   &airflow-common
   image: *airflow_image
-  environment:
-    &airflow-common-env
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
-    AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__CORE__FERNET_KEY: hCRoPUYBO27QiEg1MRu5hSjLG7yNd8y8XKlm-8kRlkQ=
-    AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS: "false"
-    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-    AIRFLOW__CORE__STORE_DAG_CODE: "true"
-    AIRFLOW__CORE__STORE_SERIALIZED_DAGS: "true"
-#    AIRFLOW__LOGGING__LOGGING_LEVEL: "INFO"
+  env_file:
+    - ./services/airflow/.env
   build:
     context: ./services/airflow
     args:
@@ -30,19 +20,17 @@ x-airflow-common:
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
     &airflow-common-depends-on
-    postgres:
+    airflow_db:
       condition: service_healthy
 # ====================================== /AIRFLOW ENVIRONMENT VARIABLES ======================================
 
 services:
-  postgres:
+  airflow_db:
     image: postgres:13-alpine
-    environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
-    ports:
-      - "5432:5432"
+    env_file:
+      - ./services/airflow_db/.env
+    expose:
+      - "5432"
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
@@ -54,8 +42,8 @@ services:
   mysql:
     build:
       context: ./services/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: 'password'
+    env_file:
+      - ./services/mysql/.env
     ports:
       - '3306:3306'
     healthcheck:
@@ -66,19 +54,15 @@ services:
     volumes:
       - mysql-db:/var/lib/mysql-db
 
-  postgres_dw:
+  postgres:
     build:
       context: ./services/postgres_dw
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=retail_etl_dw
+    env_file:
+      - ./services/postgres_dw/.env
+    expose:
+      - "5433"
     ports:
-      - "5435:5432"
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "user", "retail_etl_dw" ]
-      interval: 5s
-      retries: 5
+      - "5433:5432"
     restart: always
     volumes:
       - psql-dw:/var/lib/psql-dw
@@ -116,12 +100,6 @@ services:
   airflow-init:
     <<: *airflow-common
     command: version
-    environment:
-      <<: *airflow-common-env
-      _AIRFLOW_DB_UPGRADE: "true"
-      _AIRFLOW_WWW_USER_CREATE: "true"
-      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
 
 volumes:
   psql-db:
