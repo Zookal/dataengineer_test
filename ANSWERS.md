@@ -63,6 +63,13 @@ pipeline runs ie. by using cron pattern
 ### Dockerize Implementation
 * The project uses docker to containerize airflow and our databases, please check README.md file for more info
 
+
+### Data Reporting
+For the data reporting part, I've created SQL queries inside the 
+[dashboard_queries.sql](https://github.
+com/1byte-yoda/dataengineer_test-1/blob/develop/services/redash_analytics/scripts/dashboard_queries.sql) file.
+Please check it for more information.
+
 ### Data Profiling
 * Data profiling tools will depend on the size of the data and the business requirements.
 For small to mid size data, I will use pandas data profiling, although it's limited to Column profiling.
