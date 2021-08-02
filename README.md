@@ -13,7 +13,8 @@
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
 * [Common Errors](#common-errors)
-* [Contact](#contact)
+* [Test Answers](https://github.com/1byte-yoda/dataengineer-test/blob/master/ANSWERS.md)
+
 
 <!-- ABOUT THE PROJECT -->
 ### About The Project
@@ -42,6 +43,8 @@ which resides on a PostgreSQL database.
 * PostgreSQL: running on `localhost` at port `5432`
 * MySQL: running on `locahost` at port `3306`
 
+
+## Getting Started
 
 ### Prerequisites
 For an easy setup, the installation of this project only requires docker and docker-compose which can be 

@@ -24,17 +24,19 @@ revenue = (quantity * extended_price) - (discount * extended_price)
 ```
 
 3. I haven't impelented my idea here, and chose to do it as part of future improvements.
-But the idea is to shift the median/mean of the dates to be centered at the previous' year.
+But the idea is to shift the median/mean of the dates to be centered at a new center date.
 The pseudocode can be:
    1. Convert the dates to unix timestamp
    2. Calculate the mean or median of those timestamps, depending on data knowledge, but we can use the 
       mean for now.
    3. Measure the distance between each dates versus the mean date ie.
         * ```x_i - mean_x``` for all i in the dataset.
-   4. In our use case we are interested in the dates 
-      past 2 years, so we can use this to define our new center date which is 2020-06-15 for our use case.
+   4. In our use case we are interested with the dates from the 
+      past 2 years, so we can use this to define our new center date which is approx. 2020-06-15 for our use 
+      case.
    5. Use the distance and our defined center date to shift the old dates' distribution.
-        * ```old_timestamps + convert_to_timestamp(new_date)```
+        * ```old_timestamp + convert_to_timestamp(new_date)``` where old_timestamp can either be positive 
+          (above the mean) or negative (below the mean)
    6. This will give us date range values that can be either above the mean, or below the mean.
 
 ### Scheduling the Process
@@ -91,8 +93,10 @@ For mid to large scale data, I will use Alteryx or Talend.
 ### Production Environment and Scalability
   What would be your recommendations in terms of tools and process?
   
-  * Depending on the requirements,
-  In terms of tools, instead of using pandas, I'll use distributed processing frameworks
+  * Depending on the requirements, and I would declare some assumptions.
+
+
+  * In terms of tools, instead of using pandas, I'll use distributed processing frameworks
   like spark, AWS EMR or AWS Lambda. This will help us scale our pipeline easily if we have that in our requirements.
   We can add more nodes in our spark cluster easily in just few click, if we want to process n-times 
   amount of data.
@@ -101,9 +105,17 @@ For mid to large scale data, I will use Alteryx or Talend.
   * For the staging storage, instead of using MySQL database, I will use distributed storage like S3,
   which is also horizontally scalable. This will avoid bottlenecks in our processing framework, for
   eg. Spark, thus, utilization of distributed processing.
+    
+
+  * If we have a streaming / event use case, we can use a streaming broker like Kafka or Kinesis.
+  Here, we can control the amount of partitions if we expect to have more data load.
+  It also allows decoupling of components in our pipeline, ie. we can avoid direct access to our
+  various data source and to only depend on our streaming broker for the data that we want to consume.
   
+
   * For orchestration framework, I'll use Cloud watch to trigger the pipeline jobs for simplicity.
    We can also use Airflow here, and I can talk about it if needed.
+
 
   * For the data warehouse store, I'll pick a columnar database like Redshift which was
     optimized for analytics and aggregation, also good performance for read-heavy workloads.
