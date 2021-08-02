@@ -1,29 +1,18 @@
 # Retail ETL
 
-In this project I used Spark which was installed in localhost where Airflow also resides,
-but ideally we can use Azure Databricks or AWS EMR in the production environment for Spark,
-and Airflow ....
-
 [![Build Status](https://travis-ci.com/PHMark/gs-news-app.svg?branch=main)](https://travis-ci.com/1byte-yoda/gs-news-app)
 
 <!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <!-- <a href="https://github.com/PHmark/gs-news-app">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a> -->
-  <h3 align="center">Retail ETL</h3>
-</p>
 
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
 * [About the Project](#about-the-project)
-  * [Built With](#built-with)
+  * [Technology Stack Used](#technology-stack-used)
 * [Getting Started](#getting-started)
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-* [Workflow](#workflow)
+* [Common Errors](#common-errors)
 * [Contact](#contact)
 
 <!-- ABOUT THE PROJECT -->
