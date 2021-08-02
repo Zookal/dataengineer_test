@@ -136,11 +136,6 @@ $ make cov_report html
 
 #### TODO:
 * Add Travis CI
-* Add copy command for ddl.sql in data_gen.txt
-* Clean up docker-compose's variables with sensitive information
-* Setup Spark in Airflow's connection config [insert image]
-* Setup Mysql in Airflow's connection config [insert image]
-* Airflow plugins must use airflow variables when referring to a file.
 
 #### Dev Notes:
 * All data source tables are created upon docker starts
