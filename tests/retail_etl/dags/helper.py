@@ -57,11 +57,16 @@ def get_retail_dag_task_hierarchy() -> List[Dict]:
         {
             "task": "lineitem_tbl_to_staging_db",
             "expected_upstream": ["orders_tbl_to_staging_db", "partsupp_tbl_to_staging_db"],
-            "expected_downstream": ["end_execution"],
+            "expected_downstream": [
+                "dim_part_to_postgres_dw",
+                "dim_supplier_to_postgres_dw",
+                "dim_customer_to_postgres_dw",
+                "dim_date_to_postgres_dw",
+            ],
         },
         {
             "task": "end_execution",
-            "expected_upstream": ["lineitem_tbl_to_staging_db"],
+            "expected_upstream": ["fact_lineitem_to_postgres_dw"],
             "expected_downstream": [],
         },
     ]

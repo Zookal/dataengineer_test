@@ -70,7 +70,8 @@ def load_to_postgres_dw(
             logger.info("The PostgresDwOperator process has failed", exc_info=traceback.format_exc())
         finally:
             postgres_cursor.execute(
-                f"SELECT COUNT(CASE WHEN updated_at >= '{execution_ts}' THEN 1 ELSE NULL END) FROM {table_name};"
+                f"SELECT COUNT(CASE WHEN updated_at >= '{execution_ts}' THEN 1 ELSE NULL END) "
+                f"FROM {table_name};"
             )
             total_inserted_rows = postgres_cursor.fetchone()[0]
     postgres_conn.close()

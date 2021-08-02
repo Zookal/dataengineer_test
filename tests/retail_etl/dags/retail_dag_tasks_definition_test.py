@@ -8,7 +8,7 @@ from tests.retail_etl.dags.helper import dag_files, import_dag_file, get_retail_
 
 
 class RetailDagTaskDefTest:
-    EXPECTED_TASKS_COUNT = 10
+    EXPECTED_TASKS_COUNT = 15
     DAG_ID = "retail_dag"
     EXPECTED_TASKS = [
         "begin_execution",
@@ -20,6 +20,11 @@ class RetailDagTaskDefTest:
         "customer_tbl_to_staging_db",
         "orders_tbl_to_staging_db",
         "lineitem_tbl_to_staging_db",
+        "dim_part_to_postgres_dw",
+        "dim_supplier_to_postgres_dw",
+        "dim_customer_to_postgres_dw",
+        "dim_date_to_postgres_dw",
+        "fact_lineitem_to_postgres_dw",
         "end_execution",
     ]
 

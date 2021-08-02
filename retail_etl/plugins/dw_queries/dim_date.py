@@ -42,7 +42,7 @@ def get_upsert_query():
 
 def get_select_query_for_insert():
     return """
-    SELECT 
+    SELECT
          DATE_FORMAT(o.o_orderdate, "%Y%m%d") AS d_datekey,
          o.o_orderdate AS d_date,
          DAYOFWEEK(o.o_orderdate) AS d_dayofweek,
@@ -59,7 +59,7 @@ def get_select_query_for_insert():
 
     UNION
 
-    SELECT 
+    SELECT
          DATE_FORMAT(l.l_commitdate, "%Y%m%d") AS d_datekey,
          l.l_commitdate AS d_date,
          DAYOFWEEK(l.l_commitdate) AS d_dayofweek,
@@ -76,7 +76,7 @@ def get_select_query_for_insert():
 
     UNION
 
-    SELECT 
+    SELECT
          DATE_FORMAT(l.l_receiptdate, "%Y%m%d") AS d_datekey,
          l.l_receiptdate AS d_date,
          DAYOFWEEK(l.l_receiptdate) AS d_dayofweek,

@@ -41,11 +41,11 @@ def get_select_query_for_insert():
     JOIN nation AS n ON n.n_nationkey = c.c_nationkey
     JOIN region AS r ON r.r_regionkey = n.n_regionkey
     JOIN (
-        SELECT 
+        SELECT
             c_custkey,
             c_acctbal,
-            PERCENT_RANK() OVER(ORDER BY c_acctbal) AS ranking 
+            PERCENT_RANK() OVER(ORDER BY c_acctbal) AS ranking
         FROM customer ORDER BY c_acctbal
     ) AS ranking ON ranking.c_custkey = c.c_custkey
-    WHERE c.updated_at BETWEEN '{yesterday}' AND '{today}' 
+    WHERE c.updated_at BETWEEN '{yesterday}' AND '{today}'
     """

@@ -27,7 +27,7 @@ def get_select_query_for_insert():
         p.p_brand,
         p.p_type,
         p.p_size,
-        p.p_container 
+        p.p_container
     FROM part AS p
     WHERE p.updated_at
         BETWEEN '{yesterday}'

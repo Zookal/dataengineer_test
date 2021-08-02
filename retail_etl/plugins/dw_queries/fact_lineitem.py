@@ -19,7 +19,7 @@ def get_upsert_query():
     )
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (
-        l_linenumber, l_orderkey 
+        l_linenumber, l_orderkey
     )
     DO UPDATE SET
         (
@@ -41,20 +41,6 @@ def get_upsert_query():
             EXCLUDED.l_tax
         );
     """
-
-
-def redistributed_date_template(col_name: str, tbl_name: str) -> str:
-    return """
-    DATE_FORMAT(
-        DATE_ADD(
-            CONCAT(YEAR(NOW()) - 2, "-", DATE_FORMAT(IF({col_name} > NOW(), NOW(), {col_name}), '%m-%d')),
-            INTERVAL
-            ABS(DATEDIFF((SELECT FROM_UNIXTIME(AVG(UNIX_TIMESTAMP({col_name}))) FROM {tbl_name} AS o), 
-            {col_name})
-            ) / 730 YEAR
-        ), "%Y%m%d"
-    )
-    """.format(col_name=col_name, tbl_name=tbl_name)
 
 
 def get_select_query_for_insert():

@@ -23,7 +23,7 @@ def get_select_query_for_insert():
         s.s_name,
         s.s_address,
         n.n_name AS s_nation,
-        s.s_phone 
+        s.s_phone
     FROM supplier AS s
     JOIN nation AS n ON n.n_nationkey = s.s_nationkey
     WHERE s.updated_at BETWEEN '{yesterday}' AND '{today}'
