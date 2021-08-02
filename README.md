@@ -126,7 +126,7 @@ Running the test suites:
 $ make test
 ```
 
-Formatting all the whole project following the `black` code style:
+Formatting the whole code base following the `black` code style:
 ```
 $ make black
 ```
