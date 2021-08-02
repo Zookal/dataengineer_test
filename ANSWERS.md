@@ -8,7 +8,7 @@ Here, I removed the partsupp table entirely to simplify the model and to make it
 grain for the fact table,
 I also removed other candidates for dimension in the lineitem table that's not
 relevant to our business use case.
-![Login Page](docs/images/dw-star-schema.png)
+![star-schema](docs/images/dw-star-schema.png)
 
 #### Bonus Points
 1. I created a cluster attribute in the dim_customer table,
@@ -57,8 +57,8 @@ pipeline runs ie. by using cron pattern
     For example if we have an event data that arrives at 10:15, and all other
     events related to it came only after 1 hour (at 11:15). If we defined a watermark
     of say 2 hours, our pipeline will still consider those events that are not older than
-    9:15. It means, data between 9:15 and 11:15 are considered as micro-batches, thus, 10:15's events will 
-    be considered as on time.
+    9:15. It means, data between 9:15 and 11:15 are considered as one micro-batch, thus, 10:15's events 
+  will be considered as on time.
 
 ### Dockerize Implementation
 * The project uses docker to containerize airflow and our databases, please check README.md file for more info
@@ -99,7 +99,7 @@ For mid to large scale data, I will use Alteryx or Talend.
 ### Production Environment and Scalability
   What would be your recommendations in terms of tools and process?
   
-  * Depending on the requirements, and I would declare some assumptions.
+  * Depending on the requirements / SLAs, and I would declare some assumptions.
 
 
   * In terms of tools, instead of using pandas, I'll use distributed processing frameworks
@@ -126,7 +126,8 @@ For mid to large scale data, I will use Alteryx or Talend.
   * For the data warehouse store, I'll pick a columnar database like Redshift which was
     optimized for analytics and aggregation, also good performance for read-heavy workloads.
     It can also tolerate late data, ie. if we have late data from a dimensional attribute in which our fact 
-    table depends on. We can decide proceed it to Redshift instead of isolating it for later processing, this is 
+    table depends on. We can decide to proceed it to Redshift instead of isolating it for later processing, 
+    this is 
   because redshift does not enforce constraints. Also, I used Postgres in my current build, so migrating
   knowledge base as well as our resources won't be a painful process.
   
