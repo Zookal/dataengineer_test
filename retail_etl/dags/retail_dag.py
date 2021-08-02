@@ -6,8 +6,13 @@ from airflow.models import DAG
 from airflow.operators.dummy import DummyOperator
 
 from stage_queries.helper import get_table_upsert_query
+from dw_queries.helper import get_dw_table_upsert_query, get_dw_table_select_query
 from custom_operators.tbl_to_staging.tbl_to_staging import TblToStageOperator
 from custom_operators.postgres_dw_operator.postgres_dw_operator import PostgresDwOperator
+
+
+# TODO: DRY this module
+
 
 _SIMULATED_DATA_FOLDER = Path(__file__).parent.parent.parent / "data"
 _NOW = datetime.now()
@@ -36,6 +41,7 @@ dag = DAG(
 #########################################
 #          OPERATOR DEFINITIONS         #
 #########################################
+
 begin_execution = DummyOperator(task_id="begin_execution", dag=dag)
 
 region_tbl_to_staging_db = TblToStageOperator(
@@ -192,12 +198,88 @@ lineitem_tbl_to_staging_db = TblToStageOperator(
 
 dim_part_to_postgres_dw = PostgresDwOperator(
     task_id="dim_part_to_postgres_dw",
-    mysql_read_config={"mysql_conn_id": "mysql_default"},
-    postgres_load_config={},
-    dag=dag
+    pandas_read_config={
+        "sql": get_dw_table_select_query(table_name="dim_part"),
+        "chunksize": 10000,
+        "mysql_conn_id": "mysql_default",
+    },
+    postgres_load_config={
+        "logger_name": "airflow.task",
+        "upsert_query": get_dw_table_upsert_query(table_name="dim_part"),
+        "table_name": "dim_part",
+        "postgres_conn_id": "postgres_default",
+    },
+    dag=dag,
 )
 
-# staging_tables = ["part", "customer", "region", "nation", "supplier", "partsupp", "order", "lineitem"]
+
+dim_supplier_to_postgres_dw = PostgresDwOperator(
+    task_id="dim_supplier_to_postgres_dw",
+    pandas_read_config={
+        "sql": get_dw_table_select_query(table_name="dim_supplier"),
+        "chunksize": 10000,
+        "mysql_conn_id": "mysql_default",
+    },
+    postgres_load_config={
+        "logger_name": "airflow.task",
+        "upsert_query": get_dw_table_upsert_query(table_name="dim_supplier"),
+        "table_name": "dim_supplier",
+        "postgres_conn_id": "postgres_default",
+    },
+    dag=dag,
+)
+
+
+dim_customer_to_postgres_dw = PostgresDwOperator(
+    task_id="dim_customer_to_postgres_dw",
+    pandas_read_config={
+        "sql": get_dw_table_select_query(table_name="dim_customer"),
+        "chunksize": 10000,
+        "mysql_conn_id": "mysql_default",
+    },
+    postgres_load_config={
+        "logger_name": "airflow.task",
+        "upsert_query": get_dw_table_upsert_query(table_name="dim_customer"),
+        "table_name": "dim_customer",
+        "postgres_conn_id": "postgres_default",
+    },
+    dag=dag,
+)
+
+
+dim_date_to_postgres_dw = PostgresDwOperator(
+    task_id="dim_date_to_postgres_dw",
+    pandas_read_config={
+        "sql": get_dw_table_select_query(table_name="dim_date"),
+        "chunksize": 10000,
+        "mysql_conn_id": "mysql_default",
+    },
+    postgres_load_config={
+        "logger_name": "airflow.task",
+        "upsert_query": get_dw_table_upsert_query(table_name="dim_date"),
+        "table_name": "dim_date",
+        "postgres_conn_id": "postgres_default",
+    },
+    dag=dag,
+)
+
+
+fact_lineitem_to_postgres_dw = PostgresDwOperator(
+    task_id="fact_lineitem_to_postgres_dw",
+    pandas_read_config={
+        "sql": get_dw_table_select_query(table_name="fact_lineitem"),
+        "chunksize": 10000,
+        "mysql_conn_id": "mysql_default",
+    },
+    postgres_load_config={
+        "logger_name": "airflow.task",
+        "upsert_query": get_dw_table_upsert_query(table_name="fact_lineitem"),
+        "table_name": "fact_lineitem",
+        "postgres_conn_id": "postgres_default",
+    },
+    dag=dag,
+)
+
 
 end_execution = DummyOperator(task_id="end_execution", dag=dag)
 
@@ -215,4 +297,11 @@ part_tbl_to_staging_db.set_downstream(partsupp_tbl_to_staging_db)
 orders_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
 partsupp_tbl_to_staging_db.set_downstream(lineitem_tbl_to_staging_db)
 lineitem_tbl_to_staging_db.set_downstream(dim_part_to_postgres_dw)
-dim_part_to_postgres_dw.set_downstream(end_execution)
+lineitem_tbl_to_staging_db.set_downstream(dim_supplier_to_postgres_dw)
+lineitem_tbl_to_staging_db.set_downstream(dim_customer_to_postgres_dw)
+lineitem_tbl_to_staging_db.set_downstream(dim_date_to_postgres_dw)
+dim_part_to_postgres_dw.set_downstream(fact_lineitem_to_postgres_dw)
+dim_supplier_to_postgres_dw.set_downstream(fact_lineitem_to_postgres_dw)
+dim_customer_to_postgres_dw.set_downstream(fact_lineitem_to_postgres_dw)
+dim_date_to_postgres_dw.set_downstream(fact_lineitem_to_postgres_dw)
+fact_lineitem_to_postgres_dw >> end_execution
