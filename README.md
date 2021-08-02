@@ -115,6 +115,9 @@ Please use "*password*" as your password for Both MySQL and Postgres configs.
 ### Running Useful Commands for Development
 Running the test suites:
 ```
+# NOTE: This will download docker containers for Postgres and MySQL testing db.
+#  and might take some time to finish.
+#
 $ make test
 ```
 
@@ -137,13 +140,26 @@ $ make cov_report
 $ make cov_report html 
 ```
 
+Checking for Security Issues.
+```
+$ make scan_security 
+```
+
+For CI/CD Setup, I also created a checklist which 
+was a series of steps/checks that can raise failures 
+before we can deploy the project.
+```
+$ make checklist
+```
+
 #### TODO:
 * Add Travis CI
 
 #### Dev Notes:
-* All data source tables are created upon docker starts
+* Each services have their own folders, you can configure your dev environment
+  there as needed.
 * You can change the logging level by modifying the AIRFLOW__CORE__LOGGING_LEVEL variable
-in the docker-compose.yml file
+in the docker-compose.yml / .env file
 
 
 ### Common Errors
