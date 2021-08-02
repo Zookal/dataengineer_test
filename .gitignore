@@ -94,7 +94,6 @@ TPCH-sqlite
 
 
 # Environments
-.env
 .venv
 env/
 venv/
