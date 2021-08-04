@@ -1,9 +1,9 @@
 def get_upsert_query():
     return """
     INSERT INTO dim_supplier(
-        s_suppkey, s_id, s_name, s_address, s_nation, s_region, s_phone
+        s_id, s_name, s_address, s_nation, s_region, s_phone
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s)
     ON CONFLICT (s_id)
     DO UPDATE SET
         (s_name, s_address, s_nation, s_region, s_phone)
@@ -20,7 +20,6 @@ def get_upsert_query():
 def get_select_query_for_insert():
     return """
     SELECT DISTINCT
-        ROW_NUMBER() OVER (ORDER BY s.s_suppkey) AS s_suppkey,
         s.s_suppkey AS s_id,
         s.s_name,
         s.s_address,

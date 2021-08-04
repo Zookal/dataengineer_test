@@ -5,7 +5,7 @@
 /*************  TABLE DEFINITIONS  *************/
 /***********************************************/
 CREATE TABLE IF NOT EXISTS dim_part (
-  p_partkey     INTEGER PRIMARY KEY NOT NULL,
+  p_partkey     SERIAL PRIMARY KEY NOT NULL,
   p_id          INTEGER NOT NULL,
   p_name        VARCHAR(255) NOT NULL,
   p_mfgr        VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS dim_part (
 );
 
 CREATE TABLE IF NOT EXISTS dim_supplier (
-  s_suppkey   INTEGER PRIMARY KEY NOT NULL,
+  s_suppkey   SERIAL PRIMARY KEY NOT NULL,
   s_id        INTEGER NOT NULL,
   s_name      VARCHAR(255) NOT NULL,
   s_address   TEXT NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS dim_supplier (
 );
 
 CREATE TABLE IF NOT EXISTS dim_customer (
-  c_custkey     INTEGER PRIMARY KEY NOT NULL,
+  c_custkey     SERIAL PRIMARY KEY NOT NULL,
   c_id          INTEGER NOT NULL,
   c_name        VARCHAR(255) NOT NULL,
   c_address     TEXT NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS dim_customer (
 );
 
 CREATE TABLE IF NOT EXISTS dim_date (
-  d_datekey               INTEGER PRIMARY KEY NOT NULL,
+  d_datekey               SERIAL PRIMARY KEY NOT NULL,
   d_id                    INTEGER NOT NULL,
   d_date                  DATE NOT NULL,
   d_dayofweek             VARCHAR(255) NOT NULL,

@@ -1,9 +1,9 @@
 def get_upsert_query():
     return """
     INSERT INTO dim_part(
-        p_partkey, p_id, p_name, p_mfgr, p_brand, p_type, p_size, p_container
+        p_id, p_name, p_mfgr, p_brand, p_type, p_size, p_container
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (p_id)
     DO UPDATE SET
         (p_name, p_mfgr, p_brand, p_type, p_size, p_container)
@@ -21,7 +21,6 @@ def get_upsert_query():
 def get_select_query_for_insert():
     return """
     SELECT DISTINCT
-        ROW_NUMBER() OVER (ORDER BY p.p_partkey) AS p_partkey,
         p.p_partkey AS p_id,
         p.p_name,
         p.p_mfgr,

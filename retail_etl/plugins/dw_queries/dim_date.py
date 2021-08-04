@@ -1,7 +1,6 @@
 def get_upsert_query():
     return """
     INSERT INTO dim_date(
-        d_datekey,
         d_id,
         d_date,
         d_dayofweek,
@@ -13,7 +12,7 @@ def get_upsert_query():
         d_quarter,
         d_yearquarter
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     ON CONFLICT (d_id)
     DO UPDATE SET
         (
@@ -41,26 +40,8 @@ def get_upsert_query():
     """
 
 
-def _dim_date_select_rows_template():
-    return """
-        ROW_NUMBER() OVER (ORDER BY d_id) AS d_datekey,
-        d_id, d_date,
-        d_dayofweek,
-        d_month,
-        d_year,
-        d_monthname,
-        d_yearweek,
-        d_yearmonth,
-        d_quarter,
-        d_yearquarter
-    """
-
-
 def get_select_query_for_insert():
     return f"""
-    SELECT DISTINCT
-        {_dim_date_select_rows_template()}  # nosec
-    FROM (
         SELECT
              DATE_FORMAT(o.o_orderdate, "%Y%m%d") AS d_id,
              o.o_orderdate AS d_date,
@@ -75,9 +56,9 @@ def get_select_query_for_insert():
         FROM orders AS o
         JOIN lineitem AS l ON l.l_orderkey = o.o_orderkey
         GROUP BY d_date
-
+    
         UNION
-
+    
         SELECT
              DATE_FORMAT(l.l_commitdate, "%Y%m%d") AS d_id,
              l.l_commitdate AS d_date,
@@ -92,9 +73,9 @@ def get_select_query_for_insert():
         FROM orders AS o
         JOIN lineitem AS l ON l.l_orderkey = o.o_orderkey
         GROUP BY d_date
-
+    
         UNION
-
+    
         SELECT
              DATE_FORMAT(l.l_receiptdate, "%Y%m%d") AS d_id,
              l.l_receiptdate AS d_date,
@@ -109,5 +90,4 @@ def get_select_query_for_insert():
         FROM orders AS o
         JOIN lineitem AS l ON l.l_orderkey = o.o_orderkey
         GROUP BY d_date
-    ) AS d_date
     """
