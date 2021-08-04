@@ -59,7 +59,7 @@ def _dim_date_select_rows_template():
 def get_select_query_for_insert():
     return f"""
     SELECT DISTINCT
-        {_dim_date_select_rows_template()}
+        {_dim_date_select_rows_template()}  # nosec
     FROM (
         SELECT
              DATE_FORMAT(o.o_orderdate, "%Y%m%d") AS d_id,

@@ -268,7 +268,7 @@ fact_lineitem_to_postgres_dw = PostgresDwOperator(
     task_id="fact_lineitem_to_postgres_dw",
     pandas_read_config={
         "sql": get_dw_table_select_query(table_name="fact_lineitem"),
-        "chunksize": 10000,
+        "chunksize": 20000,
         "mysql_conn_id": "mysql_default",
     },
     postgres_load_config={
