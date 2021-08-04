@@ -20,7 +20,7 @@ def get_upsert_query():
 def get_select_query_for_insert():
     return """
     SELECT DISTINCT
-        ROW_NUMBER() OVER (ORDER BY s.s_suppkey) AS s_suppkey, 
+        ROW_NUMBER() OVER (ORDER BY s.s_suppkey) AS s_suppkey,
         s.s_suppkey AS s_id,
         s.s_name,
         s.s_address,

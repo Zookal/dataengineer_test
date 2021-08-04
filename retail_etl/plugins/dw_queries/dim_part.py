@@ -21,7 +21,7 @@ def get_upsert_query():
 def get_select_query_for_insert():
     return """
     SELECT DISTINCT
-        ROW_NUMBER() OVER (ORDER BY p.p_partkey) AS p_partkey, 
+        ROW_NUMBER() OVER (ORDER BY p.p_partkey) AS p_partkey,
         p.p_partkey AS p_id,
         p.p_name,
         p.p_mfgr,
