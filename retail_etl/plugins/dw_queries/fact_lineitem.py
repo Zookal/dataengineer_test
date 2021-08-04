@@ -28,7 +28,12 @@ def get_upsert_query():
         %s, %s, %s, %s, %s, %s
     )
     ON CONFLICT (
-        l_linenumber, l_orderkey
+        l_partkey,
+        l_suppkey,
+        l_custkey,
+        l_orderdatekey,
+        l_commitdatekey,
+        l_receiptdatekey
     )
     DO UPDATE SET
         (

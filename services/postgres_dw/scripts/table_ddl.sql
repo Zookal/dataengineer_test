@@ -64,7 +64,6 @@ CREATE TABLE IF NOT EXISTS dim_date (
 );
 
 CREATE TABLE IF NOT EXISTS fact_lineitem (
-  l_id                    SERIAL PRIMARY KEY NOT NULL,
   l_linenumber            INTEGER NOT NULL,
   l_orderkey              INTEGER NOT NULL,
   l_partkey               INTEGER NOT NULL,
@@ -81,6 +80,7 @@ CREATE TABLE IF NOT EXISTS fact_lineitem (
   l_tax                   DECIMAL(5, 2) NOT NULL,
   created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (l_partkey, l_suppkey, l_custkey, l_orderdatekey, l_commitdatekey, l_receiptdatekey),
   FOREIGN KEY (l_partkey) REFERENCES dim_part(p_partkey),
   FOREIGN KEY (l_custkey) REFERENCES dim_customer(c_custkey),
   FOREIGN KEY (l_orderdatekey) REFERENCES dim_date(d_datekey),
