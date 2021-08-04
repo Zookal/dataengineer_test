@@ -90,25 +90,25 @@ LIMIT 5;
 --     PREVIOUS VS. CURRENT PERIOD REVENUE     --
 -------------------------------------------------
 SELECT
-    current_period.d_yearmonth,
-    current_period.avg_revenue AS current_period_avg_revenue,
     CASE
-        WHEN prev_period.d_yearmonth IS NULL
+        WHEN current_period.d_yearmonth IS NULL
             THEN 'N/A'
-        ELSE prev_period.d_yearmonth
-    END AS prev_period_d_yearmonth,
+        ELSE current_period.d_yearmonth
+    END AS current_period_d_yearmonth,
     CASE
-        WHEN prev_period.avg_revenue IS NULL
+        WHEN current_period.avg_revenue IS NULL
             THEN 0
-        ELSE prev_period.avg_revenue
-    END AS prev_period_avg_revenue
+        ELSE current_period.avg_revenue
+    END AS current_period_avg_revenue,
+    prev_period.d_yearmonth AS prev_period_d_yearmonth,
+    prev_period.avg_revenue AS prev_period_avg_revenue
 FROM (
     SELECT
         ROUND(AVG(l_revenue), 2) AS avg_revenue,
         d.d_month,
         d_yearmonth
     FROM fact_lineitem AS l
-    JOIN dim_date AS d ON d.d_datekey = l.l_orderdatekey
+    JOIN dim_date AS d ON d.d_datekey = l.l_receiptdatekey
     WHERE d_year = 1997
     GROUP BY d_month, d_yearmonth
 ) AS prev_period
@@ -118,8 +118,8 @@ LEFT JOIN (
         d.d_month,
         d.d_yearmonth
     FROM fact_lineitem AS l
-    JOIN dim_date AS d ON d.d_datekey = l.l_orderdatekey
+    JOIN dim_date AS d ON d.d_datekey = l.l_receiptdatekey
     WHERE d_year = 1998
     GROUP BY d_month, d_yearmonth
 ) AS current_period ON current_period.d_month = prev_period.d_month
-ORDER BY d_yearmonth;
+ORDER BY current_period_d_yearmonth, prev_period_d_yearmonth;

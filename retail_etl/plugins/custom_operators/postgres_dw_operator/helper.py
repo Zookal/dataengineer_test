@@ -61,7 +61,8 @@ def load_to_postgres_dw(
         nrows = len(_df)
         logger.info(f"Inserting {nrows} rows in the {table_name} table...")
         try:
-            rows = (tuple(row) for row in _df.itertuples(index=False))
+            rows = [tuple(row) for row in _df.itertuples(index=False)]
+            print(rows)
             upsert_query = data_load_args.get("upsert_query", "")
             postgres_cursor.executemany(upsert_query, rows)
             postgres_conn.commit()

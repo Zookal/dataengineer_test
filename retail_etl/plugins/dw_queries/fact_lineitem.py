@@ -10,21 +10,29 @@ def get_upsert_query():
         l_commitdatekey,
         l_receiptdatekey,
         l_shipmode,
-        l_ordertotalprice,
         l_quantity,
         l_extendedprice,
         l_discount,
         l_revenue,
         l_tax
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    VALUES (
+        %s,
+        %s,
+        (SELECT p_partkey from dim_part WHERE p_id=%s),
+        (SELECT s_suppkey from dim_supplier WHERE s_id=%s),
+        (SELECT c_custkey from dim_customer WHERE c_id=%s),
+        (SELECT d_datekey from dim_date WHERE d_id=%s),
+        (SELECT d_datekey from dim_date WHERE d_id=%s),
+        (SELECT d_datekey from dim_date WHERE d_id=%s),
+        %s, %s, %s, %s, %s, %s
+    )
     ON CONFLICT (
         l_linenumber, l_orderkey
     )
     DO UPDATE SET
         (
             l_shipmode,
-            l_ordertotalprice,
             l_quantity,
             l_extendedprice,
             l_discount,
@@ -33,7 +41,6 @@ def get_upsert_query():
         )
         = (
             EXCLUDED.l_shipmode,
-            EXCLUDED.l_ordertotalprice,
             EXCLUDED.l_quantity,
             EXCLUDED.l_extendedprice,
             EXCLUDED.l_discount,
@@ -55,7 +62,6 @@ def get_select_query_for_insert():
          DATE_FORMAT(l.l_commitdate, '%Y%m%d') AS l_commitdatekey,
          DATE_FORMAT(l.l_receiptdate, '%Y%m%d') AS l_receiptdatekey,
          l.l_shipmode,
-         o.o_totalprice AS l_ordertotalprice,
          l.l_quantity,
          l.l_extendedprice,
          l.l_discount,
