@@ -1,0 +1,107 @@
+version: "3"
+
+# ====================================== AIRFLOW ENVIRONMENT VARIABLES =======================================
+x-airflow-image: &airflow_image apache/airflow:2.1.0-python3.6
+
+x-airflow-common:
+  &airflow-common
+  image: *airflow_image
+  env_file:
+    - ./services/airflow/.env
+  build:
+    context: ./services/airflow
+    args:
+      AIRFLOW_BASE_IMAGE: *airflow_image
+  volumes:
+    - ./retail_etl/dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./retail_etl/plugins:/opt/airflow/plugins
+    - ./data:/opt/data
+  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+  depends_on:
+    &airflow-common-depends-on
+    airflow_db:
+      condition: service_healthy
+# ====================================== /AIRFLOW ENVIRONMENT VARIABLES ======================================
+
+services:
+  airflow_db:
+    image: postgres:13-alpine
+    env_file:
+      - ./services/airflow_db/.env
+    expose:
+      - "5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      interval: 5s
+      retries: 5
+    restart: always
+    volumes:
+      - psql-db:/var/lib/psql-db
+
+  mysql:
+    build:
+      context: ./services/mysql
+    env_file:
+      - ./services/mysql/.env
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 5
+    restart: always
+    volumes:
+      - mysql-db:/var/lib/mysql-db
+
+  postgres:
+    build:
+      context: ./services/postgres_dw
+    env_file:
+      - ./services/postgres_dw/.env
+    expose:
+      - "5433"
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - psql-dw:/var/lib/psql-dw
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8282:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: [ "CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"' ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+
+volumes:
+  psql-db:
+  mysql-db:
+  psql-dw:

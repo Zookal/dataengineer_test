@@ -94,7 +94,6 @@ TPCH-sqlite
 
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -119,3 +118,10 @@ venv.bak/
 .python-version
 example.db
 
+# Airflow dev logs
+/logs
+
+# Pycharm Configs
+.idea/
+
+data/

@@ -1,109 +1,175 @@
-# Data Engineer Interview Test
+# Retail ETL
 
-We are looking for a high quality data engineer which can deliver comprehensive solutions for our continuity and business growth. 
+[![Build Status](https://travis-ci.com/PHMark/gs-news-app.svg?branch=main)](https://travis-ci.com/1byte-yoda/gs-news-app)
 
-The Analytics team drives the data culture, we want to change how we produce data from large batches to micro batching, from daily to near real-time/streaming processing, from tabular reports to insightful dashboards.    
+<!-- PROJECT LOGO -->
 
-You can be part of an amazing team which deals with data all the time using different process, tools and technologies.
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
 
-Following is a little treasure and challenge for those keen on joining this amazing company and team.
-
-## Junior/Mid 
-For a Junior/Mid role we are expecting at least 2-3 tables to be loaded and an aggregated report done.
-
-## Senior
-We are expecting the most from you.
-
-
-# The Project
-Build a small ETL process to digest a few set of files into a data warehouse like project. 
-
-We are expecting an end-to-end ETL solution to deliver a simple star schema which an end user can easily slice and dice the data through a report or using basic ad-hoc query.
-
-### Tools and Technologies
-We are a Python and SQL workshop, we would like to see this project using just those tools.  
-
-However, we are open to other tools and technologies if we are able to easily replicate on our side. 
-
-For the database, use a simple and light optimizer for your database, choose the one which can run a browser, but don't be limited to it. 
-
-Please, avoid licensed products, we may not be able to proceed with this restriction on our own, if this is the case you may need to book a meeting to bring your tool and demo to us. 
-
-How to do it?
------------------------
-Fork this repo, build your ETL process and commit the code with your answers. Open a Pull Request and send us a message highlighting the test is completed.
-
-#### Rules
-* it must come with step by step instructions to run the code.
-* please, be mindful that your code might be moved or deleted after we analyse the PR. 
-* use the best practices
-* be able to explain from the ground up the whole process on face to face interview
-
-The small ETL project
---------- 
-
-1. The data for this exercise can be found on the `data.zip` file. Can you describe the file format?
-
-**Super Bonus**: generate your own data through the instructions on the encoded file `bonus_etl_data_gen.txt`.
-To get the bonus points, please encoded the file with the instructions were used to generate the files.
-
-2. Code you scripts to load the data into a database.
-
-3. Design a star schema model which the data should flow.
-
-4. Build your process to load the data into the star schema 
-
-**Bonus** point: 
-- add a fields to classify the customer account balance in 3 groups 
-- add revenue per line item 
-- convert the dates to be distributed over the last 2 years
-
-5. How to schedule this process to run multiple times per day?
- 
-**Bonus**: What to do if the data arrives in random order and times via streaming?
-
-6. How to deploy this code?
-
-**Bonus**: Can you make it to run on a container like process (Docker)? 
-
-Data Reporting
--------
-One of the most important aspects to build a DWH is to deliver insights to end-users. 
-
-Can you using the designed star schema (or if you prefer the raw data), generate SQL statements to answer the following questions:
-
-1. What are the top 5 nations in terms of revenue?
-
-2. From the top 5 nations, what is the most common shipping mode?
-
-3. What are the top selling months?
-
-4. Who are the top customer in terms of revenue and/or quantity?
-
-5. Compare the sales revenue of on current period against previous period?
+* [About the Project](#about-the-project)
+  * [Technology Stack Used](#technology-stack-used)
+* [Getting Started](#getting-started)
+  * [Prerequisites](#prerequisites)
+  * [Installation](#installation)
+* [Common Errors](#common-errors)
+* [Test Answers](https://github.com/1byte-yoda/dataengineer-test/blob/master/ANSWERS.md)
 
 
-Data profilling
-----   
-Data profiling are bonus.
+<!-- ABOUT THE PROJECT -->
+### About The Project
+This Batch ETL pipeline aims to parse semi-structured data like .tbl files,
+stage it to a MySQL database, and then load it to a Star Schema
+which resides on a PostgreSQL database.
 
-What tools or techniques you would use to profile the data?
- 
-What results of the data profiling can impact on your analysis and design?   
+#### General Architecture
+![General Architecture](docs/images/general-architecture.png)
 
-
-
-Architecture
------
-If this pipeline is to be build for a real live environment.
-What would be your recommendations in terms of tools and process?
-
-Would be a problem if the data from the source system is growing at 6.1-12.7% rate a month?
+#### DAG Representation
+![DAG Representation](docs/images/dag.png)
 
 
+#### Technology Stack Used
 
-ERD
---
-![alt text](erd.png "ERD")
+* [Python 3](https://www.python.org/)
+* [Airflow](https://www.airflow.org/)
+* [Docker](https://www.docker.com/)
+* [PostgreSQL](https://www.postgresql.org/)
+* [MySQL](https://www.mysql.com/)
 
-Author: adilsonmendonca
+
+#### Network Configurations Used
+* Airflow: running on `localhost` at port `8282` 
+* PostgreSQL: running on `localhost` at port `5432`
+* MySQL: running on `locahost` at port `3306`
+
+
+## Getting Started
+
+### Prerequisites
+For an easy setup, the installation of this project only requires docker and docker-compose which can be 
+downloaded from the following links:
+* [Docker](https://docs.docker.com/get-docker/)
+* [Docker Compose](https://docs.docker.com/compose/install/)
+
+Although, for development environment, like running tests & stuff, you will need to install
+Python3 and the pacakges inside the `requirements-dev.txt` file.
+
+Just take note that this project was tested and developed using Python 3.9.1, please check if you have the 
+right version installed.
+```
+$ python --version
+Python 3.9.1
+```
+
+### Installation
+Once you have the requirements above, you can clone and spin up the project with ease.
+1. Clone the repo
+```sh
+$ git clone https://github.com/1byte-yoda/dataengineer-test
+````
+
+2. This step is crucial, go to the project's root directory and follow the instructions inside the data_gen.
+   txt file.
+
+3. Make sure you've done the previous step, if so, you can spin up the docker containers with the 
+   following command.
+   
+```
+$ docker-compose up --build
+```
+
+4. This step is optional, and is required for development setup.
+```
+$ pip install -r requirements-dev.txt
+```
+
+5. Accessing the Airflow Web UI.
+  * Airflow was set up to run at http://localhost:8282, kindly check this link, airflow must be up and 
+    running. You'll be prompted to log-in.
+    * Default credentials for airflow:
+      * `username: airflow`
+      * `password: airflow`
+    * Although these information can be modified inside .env file.
+  
+#### Airflow's Login Page
+![Login Page](docs/images/airflow-homepage.png)
+
+6. This additional step was needed before you can run the project,
+    * Add the connection details / credentials for PostgreSQL and MySQL databases.
+    * Link to connection setup page http://localhost:8282/connection/list/, go to this link.
+    * On the top-left area of the UI, you'll find a + (plus sign), click it to add services / configurations.
+
+#### Airflow's Connection List Page
+![Connection List](docs/images/airflow-connection-list.png)
+
+#### MySQL Configuration
+![MySQL Configuration](docs/images/airflow-mysql-config.png)
+
+#### Postgres Configuration
+![Postgres Configuration](docs/images/airflow-postgres-config.png)
+
+#### Important
+Please use "*password*" as your password for Both MySQL and Postgres configs. 
+
+### Running Useful Commands for Development
+Running the test suites:
+```
+# NOTE: This will download docker containers for Postgres and MySQL testing db.
+#  and might take some time to finish.
+#
+$ make test
+```
+
+Formatting the whole code base following the `black` code style:
+```
+$ make black
+```
+
+Checking for lints / un-obvious code mistakes:
+```
+$ make lint
+```
+
+Checking the test coverage of the project.
+```
+# Prints the coverage output in the CLI.
+$ make cov_report
+
+# Saves the coverage output in a readable, HTML format.
+$ make cov_report html 
+```
+
+Checking for Security Issues.
+```
+$ make scan_security 
+```
+
+For CI/CD Setup, I also created a checklist which 
+was a series of steps/checks that can raise failures 
+before we can deploy the project.
+```
+$ make checklist
+```
+
+#### TODO:
+* Add Travis CI
+
+#### Dev Notes:
+* Each services have their own folders, you can configure your dev environment
+  there as needed.
+* You can change the logging level by modifying the AIRFLOW__CORE__LOGGING_LEVEL variable
+in the docker-compose.yml / .env file
+
+
+### Common Errors
+* Volume data was not found by docker-compose
+    * Make sure you already ran the data_gen.txt command.
+    * If that's not the case, run docker system prune -a to clean up docker images, then build the 
+      containers again
+* pytest throws docker.errors.APIError
+    * This is due to unstable network connection with the docker server,
+      try running the test again.
+    * Make sure airflow and other dependent services are down by running:
+    `docker-compose down`, then run the test again
+      
