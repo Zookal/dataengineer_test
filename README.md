@@ -5,9 +5,7 @@
   - [Singer](https://www.singer.io/) taps and targets - ready-to-use extract and load scripts
   - [dbt](https://www.getdbt.com/product/what-is-dbt/) - transform data with simple SELECT statements and Jinja templating
   - Apache Airflow
-- [Apache Superset](https://superset.apache.org/) - "open source Tableau" (also comes with a useful SQL editor for ad hoc queries)
-- PostgreSQL
-- Docker and docker-compose
+- PostgreSQL and pgcli
 
 ## ETL (ELT, rather)
 1. The data for this exercise can be found on the `data.zip` file. Can you describe the file format?
