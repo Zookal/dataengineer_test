@@ -142,6 +142,7 @@ plugins:
     pip_url: git+https://github.com/meltano/target-postgres.git
     config:
       user: postgres
+      password: password
       host: 127.0.0.1
       port: 5432
       dbname: de_test
