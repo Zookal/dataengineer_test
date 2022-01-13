@@ -65,6 +65,9 @@ meltano schedule tbl_to_postgres tap-spreadsheets-anywhere target-postgres --tra
     - Assumed any period would suffice so I just went with a month to month comparison.
 
 ## Data profiling
-Considering we're already using dbt, something like [dbt_profiler](https://hub.getdbt.com/data-mie/dbt_profiler/latest/) would probably best suit our needs. For datasets as small as the one tackled in this project, though, something like [pandas_profiling](https://pandas-profiling.github.io/pandas-profiling/docs/master/rtd/) used in a Jupyter notebook would probably suffice.
+Considering we're already using dbt, something like [dbt_profiler](https://hub.getdbt.com/data-mie/dbt_profiler/latest/) would probably best suit our needs. I've also heard good things about [Great Expectattions](https://greatexpectations.io/). For datasets as small as the one tackled in this project, though, something like [pandas_profiling](https://pandas-profiling.github.io/pandas-profiling/docs/master/rtd/) would probably suffice.
 
 ## Architecture
+I think Meltano makes a solid case for Singer + dbt + Airflow for small to mid-sized business cases. Like I said, ideally there would be a CI/CD pipeline from code repo to container repo to ECS/EKS, plus testing and monitoring etc. I'm not sure how Singer compares to ingestion based on Spark when it comes to much bigger workloads, so maybe that's the first component to be reevaluated. Perhaps at that point it's just better to go full EMR.
+
+I'm a bit intrigued by the AWS data analytics offerings, namely the S3 + Glue + Athena combo, but I've heard that Athena doesn't quite measure up to Snowflake or even Redshift.
