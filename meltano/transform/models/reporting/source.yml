@@ -1,8 +1,8 @@
 config-version: 2
 version: 2
 sources:
-  - name: star
-    schema: star
+  - name: analytics_star
+    schema: analytics_star
     tables:
       - name: dim_customer
       - name: dim_date

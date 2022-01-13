@@ -1,7 +1,7 @@
 WITH fct_lineitem AS (
-  SELECT * FROM {{ source('star', 'fct_lineitem') }}
+  SELECT * FROM {{ source('analytics_star', 'fct_lineitem') }}
 ), dim_customer AS (
-  SELECT * FROM {{ source('star', 'dim_customer') }}
+  SELECT * FROM {{ source('analytics_star', 'dim_customer') }}
 )
 
 SELECT
