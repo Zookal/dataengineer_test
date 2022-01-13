@@ -136,3 +136,13 @@ plugins:
     - catalog
     - discover
     - state
+  loaders:
+  - name: target-postgres
+    variant: meltano
+    pip_url: git+https://github.com/meltano/target-postgres.git
+    config:
+      user: postgres
+      host: 127.0.0.1
+      port: 5432
+      dbname: de_test
+      schema: staging
