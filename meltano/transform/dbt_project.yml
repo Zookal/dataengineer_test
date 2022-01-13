@@ -22,4 +22,10 @@ clean-targets:
 - dbt_modules
 - logs
 models:
-  my_meltano_project: null
+  de_test:
+    star:
+      +schema: star
+      +materialized: table
+    reporting:
+      +schema: reporting
+      +materialized: view
