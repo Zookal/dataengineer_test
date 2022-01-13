@@ -21,6 +21,14 @@ To get the bonus points, please encoded the file with the instructions were used
 
 >2. Code you scripts to load the data into a database.
 
+Meltano, building on Singer, makes this dead simple:
+```
+$ meltano add extractor tap-spreadsheets-anywhere
+$ meltano add loader target-postgres --variant meltano
+$ meltano elt tap-spreadsheets-anywhere target-postgres
+```
+Most of the work goes into the [configuration](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/meltano.yml).
+
 >3. Design a star schema model which the data should flow.
 
 >4. Build your process to load the data into the star schema 
