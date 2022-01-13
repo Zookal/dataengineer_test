@@ -1,11 +1,11 @@
 # Data Engineer Interview Test
 
 ## Tools and technologies
-- Meltano - basically a very neat (open source) way to package:
-  - Singer taps and targets
-  - dbt
-  - Airflow
-- Apache Superset - "open source Tableau" (also comes with a useful SQL editor for ad hoc queries)
+- [Meltano](https://meltano.com/) - very convenient open source tool for building pipelines with:
+  - [Singer](https://www.singer.io/) taps and targets - ready-to-use extract and load scripts
+  - [dbt](https://www.getdbt.com/product/what-is-dbt/) - transform data with simple SELECT statements and Jinja templating
+  - Apache Airflow - the one and only
+- [Apache Superset](https://superset.apache.org/) - "open source Tableau" (also comes with a useful SQL editor for ad hoc queries)
 - PostgreSQL
 - Docker and docker-compose
 
@@ -19,21 +19,21 @@ To get the bonus points, please encoded the file with the instructions were used
 
 **Done ✅**. File was encoded in base64.
 
-2. Code you scripts to load the data into a database.
+>2. Code you scripts to load the data into a database.
 
-3. Design a star schema model which the data should flow.
+>3. Design a star schema model which the data should flow.
 
-4. Build your process to load the data into the star schema 
+>4. Build your process to load the data into the star schema 
 
-**Bonus** point: 
-- add a fields to classify the customer account balance in 3 groups 
-- add revenue per line item 
-- convert the dates to be distributed over the last 2 years
+>**Bonus** point: 
+>- add a fields to classify the customer account balance in 3 groups 
+>- add revenue per line item 
+>- convert the dates to be distributed over the last 2 years
 
-5. How to schedule this process to run multiple times per day?
+>5. How to schedule this process to run multiple times per day?
  
-**Bonus**: What to do if the data arrives in random order and times via streaming?
+>**Bonus**: What to do if the data arrives in random order and times via streaming?
 
-6. How to deploy this code?
+>6. How to deploy this code?
 
-**Bonus**: Can you make it to run on a container like process (Docker)? 
+>**Bonus**: Can you make it to run on a container like process (Docker)? 
