@@ -22,12 +22,12 @@ clean-targets:
 - dbt_modules
 - logs
 models:
-  de_test:
+  my_meltano_project:
     star:
-      +schema: star
-      +materialized: table
+      schema: star
+      materialized: table
     reporting:
-      +schema: reporting
-      +materialized: view
+      schema: reporting
+      materialized: view
 vars:
   'dbt_date:time_zone': 'America/Los_Angeles'
