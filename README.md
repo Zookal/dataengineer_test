@@ -30,6 +30,10 @@ $ meltano elt tap-spreadsheets-anywhere target-postgres
 
 4. Build your process to load the data into the star schema
     - See [this directory](https://github.com/mkdlt/dataengineer_test/tree/master/meltano/transform/models/star). Again, dbt makes the transform step relatively painless.
+```
+$ meltano add transformer dbt
+$ meltano elt tap-spreadsheets-anywhere target-postgres --transform=run
+```
 
 - **Bonus** points: 
   - add a field to classify the customer account balance in 3 groups. [Done](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/star/dim_customer.sql) ✅
