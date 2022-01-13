@@ -150,8 +150,6 @@ plugins:
   transformers:
   - name: dbt
     pip_url: dbt==0.21.1
-    config:
-      target_schema: star
   files:
   - name: dbt
     pip_url: git+https://gitlab.com/meltano/files-dbt.git@config-version-2

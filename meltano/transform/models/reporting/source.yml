@@ -1,0 +1,11 @@
+config-version: 2
+version: 2
+sources:
+  - name: star
+    schema: star
+    tables:
+      - name: dim_customer
+      - name: dim_date
+      - name: dim_part
+      - name: dim_supplier
+      - name: fct_lineitem
