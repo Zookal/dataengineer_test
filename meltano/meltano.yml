@@ -158,3 +158,10 @@ plugins:
     pip_url: git+https://gitlab.com/meltano/files-dbt.git@config-version-2
   - name: airflow
     pip_url: git+https://gitlab.com/meltano/files-airflow.git
+schedules:
+- name: tbl-to-postgres
+  extractor: tap-spreadsheets-anywhere
+  loader: target-postgres
+  transform: run
+  interval: '@hourly'
+  start_date: 2022-01-13 14:29:33.134229
