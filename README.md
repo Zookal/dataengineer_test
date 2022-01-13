@@ -6,6 +6,8 @@
   - [dbt](https://www.getdbt.com/product/what-is-dbt/) - transform data with simple SELECT statements and Jinja templating
   - Apache Airflow
 - PostgreSQL and pgcli
+- pyenv and pyenv-virtualenv (some needed libraries needed python<3.9)
+- Docker
 
 ## ETL (ELT, rather)
 1. The data for this exercise can be found on the `data.zip` file. Can you describe the file format?
@@ -69,3 +71,40 @@ Considering we're already using dbt, something like [dbt_profiler](https://hub.g
 
 ## Architecture
 I think Meltano makes a solid case for Singer + dbt + Airflow for small to mid-sized business cases. Like I said, ideally there would be a CI/CD pipeline from code repo to container repo to ECS/EKS, plus testing and monitoring etc. I'm not sure how Singer compares to ingestion based on Spark when it comes to much bigger workloads, so maybe that's the first component to be reevaluated.
+
+## Step by step
+```
+$ git clone git@github.com:mkdlt/dataengineer_test.git
+$ cd datangineer_test
+```
+After installing pyenv and pyenv-virtualenv:
+```
+$ pyenv install 3.8.12
+$ pyenv virtualenv 3.8.12 de_test
+$ pyenv local de_test
+$ pyenv exec pip install meltano
+$ cd meltano
+```
+Adding the Singer taps:
+```
+$ pyenv exec meltano add extractor tap-spreadsheets-anywhere
+$ pyenv exec meltano add loader target-postgres --variant meltano
+$ docker run --name de_test -e POSTGRES_PASSWORD=password -e POSTGRES_DB=de_test -p 5432:5432 -d postgres
+$ pyenv exec meltano elt tap-spreadsheets-anywhere target-postgres
+```
+You can now query tables in the staging schema:
+```
+$ pgcli -h localhost -u postgres -d de_test
+```
+Adding dbt:
+```
+$ pyenv exec meltano add transformer dbt
+$ pyenv exec meltano elt tap-spreadsheets-anywhere target-postgres --transform=run
+```
+You can now query tables in the analytics_star and analytics_reporting schemas.
+Adding Airflow:
+```
+$ pyenv exec meltano add orchestrator airflow
+$ pyenv exec meltano schedule tbl-to-postgres tap-spreadsheets-anywhere target-postgres --transform=run @hourly
+$ pyenv exec meltano invoke airflow scheduler -D
+```
