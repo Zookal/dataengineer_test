@@ -1,0 +1,167 @@
+version: 1
+send_anonymous_usage_stats: true
+project_id: 1b6e33ad-3fcb-4280-9ac7-7c12ae357a80
+plugins:
+  extractors:
+  - name: tap-spreadsheets-anywhere
+    variant: ets
+    pip_url: git+https://github.com/ets/tap-spreadsheets-anywhere.git
+    config:
+      tables:
+      - path: file://../data
+        name: stg_customer
+        pattern: customer.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - custkey
+        - name
+        - address
+        - nationkey
+        - phone
+        - acctbal
+        - mktsegment
+        - comment
+      - path: file://../data
+        name: stg_lineitem
+        pattern: lineitem.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - orderkey
+        - partkey
+        - suppkey
+        - linenumber
+        - quantity
+        - extendedprice
+        - discount
+        - tax
+        - returnflag
+        - linestatus
+        - shipdate
+        - commitdate
+        - receiptdate
+        - shipinstruct
+        - shipmode
+        - comment
+      - path: file://../data
+        name: stg_nation
+        pattern: nation.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - nationkey
+        - name
+        - regionkey
+        - comment
+      - path: file://../data
+        name: stg_orders
+        pattern: orders.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - orderkey
+        - custkey
+        - orderstatus
+        - totalprice
+        - orderdate
+        - orderpriority
+        - clerk
+        - shippriority
+        - comment
+      - path: file://../data
+        name: stg_part
+        pattern: part.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - partkey
+        - name
+        - mfgr
+        - brand
+        - type
+        - size
+        - container
+        - retailprice
+        - comment
+      - path: file://../data
+        name: stg_partsupp
+        pattern: partsupp.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - partkey
+        - suppkey
+        - availqty
+        - supplycost
+      - path: file://../data
+        name: stg_region
+        pattern: region.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - regionkey
+        - name
+        - comment
+      - path: file://../data
+        name: stg_supplier
+        pattern: supplier.tbl
+        start_date: '2022-01-01T00:00:00Z'
+        key_properties: []
+        format: csv
+        delimiter: '|'
+        field_names:
+        - suppkey
+        - name
+        - address
+        - nationkey
+        - phone
+        - acctbal
+        - comment
+    capabilities:
+    - catalog
+    - discover
+    - state
+  loaders:
+  - name: target-postgres
+    variant: meltano
+    pip_url: git+https://github.com/meltano/target-postgres.git
+    config:
+      user: postgres
+      password: password
+      host: 127.0.0.1
+      port: 5432
+      dbname: de_test
+      schema: staging
+  orchestrators:
+  - name: airflow
+    pip_url: apache-airflow==2.1.2 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.1.2/constraints-${MELTANO__PYTHON_VERSION}.txt
+  transformers:
+  - name: dbt
+    pip_url: dbt==0.21.1
+  files:
+  - name: dbt
+    pip_url: git+https://gitlab.com/meltano/files-dbt.git@config-version-2
+  - name: airflow
+    pip_url: git+https://gitlab.com/meltano/files-airflow.git
+schedules:
+- name: tbl-to-postgres
+  extractor: tap-spreadsheets-anywhere
+  loader: target-postgres
+  transform: run
+  interval: '@hourly'
+  start_date: 2022-01-13 14:29:33.134229

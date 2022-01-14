@@ -1,0 +1,14 @@
+config-version: 2
+version: 2
+sources:
+  - name: staging
+    schema: staging
+    tables:
+      - name: stg_customer
+      - name: stg_lineitem
+      - name: stg_nation
+      - name: stg_orders
+      - name: stg_part
+      - name: stg_partsupp
+      - name: stg_region
+      - name: stg_supplier

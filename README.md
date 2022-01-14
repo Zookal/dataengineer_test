@@ -1,109 +1,107 @@
 # Data Engineer Interview Test
 
-We are looking for a high quality data engineer which can deliver comprehensive solutions for our continuity and business growth. 
+## Tools and technologies
+- [Meltano](https://meltano.com/) - very convenient open source tool for building pipelines with:
+  - [Singer](https://www.singer.io/) taps and targets - ready-to-use extract and load scripts
+  - [dbt](https://www.getdbt.com/product/what-is-dbt/) - transform data with simple SELECT statements and Jinja templating
+  - Apache Airflow
+- PostgreSQL and pgcli
+- pyenv and pyenv-virtualenv (some needed libraries needed python<3.9)
+- Docker
 
-The Analytics team drives the data culture, we want to change how we produce data from large batches to micro batching, from daily to near real-time/streaming processing, from tabular reports to insightful dashboards.    
-
-You can be part of an amazing team which deals with data all the time using different process, tools and technologies.
-
-Following is a little treasure and challenge for those keen on joining this amazing company and team.
-
-## Junior/Mid 
-For a Junior/Mid role we are expecting at least 2-3 tables to be loaded and an aggregated report done.
-
-## Senior
-We are expecting the most from you.
-
-
-# The Project
-Build a small ETL process to digest a few set of files into a data warehouse like project. 
-
-We are expecting an end-to-end ETL solution to deliver a simple star schema which an end user can easily slice and dice the data through a report or using basic ad-hoc query.
-
-### Tools and Technologies
-We are a Python and SQL workshop, we would like to see this project using just those tools.  
-
-However, we are open to other tools and technologies if we are able to easily replicate on our side. 
-
-For the database, use a simple and light optimizer for your database, choose the one which can run a browser, but don't be limited to it. 
-
-Please, avoid licensed products, we may not be able to proceed with this restriction on our own, if this is the case you may need to book a meeting to bring your tool and demo to us. 
-
-How to do it?
------------------------
-Fork this repo, build your ETL process and commit the code with your answers. Open a Pull Request and send us a message highlighting the test is completed.
-
-#### Rules
-* it must come with step by step instructions to run the code.
-* please, be mindful that your code might be moved or deleted after we analyse the PR. 
-* use the best practices
-* be able to explain from the ground up the whole process on face to face interview
-
-The small ETL project
---------- 
-
+## ETL (ELT, rather)
 1. The data for this exercise can be found on the `data.zip` file. Can you describe the file format?
+    - They seem to be flat files delimited by pipe characters. Each line has a trailing pipe.
 
-**Super Bonus**: generate your own data through the instructions on the encoded file `bonus_etl_data_gen.txt`.
-To get the bonus points, please encoded the file with the instructions were used to generate the files.
+- **Super Bonus**: generate your own data through the instructions on the encoded file `bonus_etl_data_gen.txt`.
+To get the bonus points, please encode the file with the instructions used to generate the files.
+  - [Done](https://github.com/mkdlt/dataengineer_test/blob/master/bonus_etl_data_gen_answer.txt) ✅. File was encoded in base64.
 
-2. Code you scripts to load the data into a database.
+2. Code your scripts to load the data into a database.
+    - Meltano, building on Singer, makes this very simple. Most of the work goes into [configuration](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/meltano.yml).
+```
+$ meltano add extractor tap-spreadsheets-anywhere
+$ meltano add loader target-postgres --variant meltano
+$ meltano elt tap-spreadsheets-anywhere target-postgres
+```
+3. Design a star schema model which the data should follow.
+ 
+![Star schema](star_schema_erd.png)
 
-3. Design a star schema model which the data should flow.
+4. Build your process to load the data into the star schema
+    - See [this directory](https://github.com/mkdlt/dataengineer_test/tree/master/meltano/transform/models/star). Again, dbt makes the transform step relatively painless.
+```
+$ meltano add transformer dbt
+$ meltano elt tap-spreadsheets-anywhere target-postgres --transform=run
+```
 
-4. Build your process to load the data into the star schema 
-
-**Bonus** point: 
-- add a fields to classify the customer account balance in 3 groups 
-- add revenue per line item 
-- convert the dates to be distributed over the last 2 years
+- **Bonus** points: 
+  - add a field to classify the customer account balance in 3 groups. [Done](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/star/dim_customer.sql) ✅
+  - add revenue per line item. [Done](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/star/fct_lineitem.sql) ✅
+  - convert the dates to be distributed over the last 2 years. (to do)
 
 5. How to schedule this process to run multiple times per day?
+    - Meltano makes this very easy once again
+```
+$ meltano add orchestrator airflow
+$ meltano schedule tbl-to-postgres tap-spreadsheets-anywhere target-postgres --transform=run @hourly
+$ meltano invoke airflow scheduler -D
+```
  
-**Bonus**: What to do if the data arrives in random order and times via streaming?
+- **Bonus**: What to do if the data arrives in random order and times via streaming?
+  - If we care about real-time/event-driven analytics, we'll have to switch to stream processing tools. So far I've only used the AWS offerings (Lambda, the Kinesis suite), but not extensively.
+  - That said, real-time data production doesn't always require real-time data processing. If batch processing will suffice for the client's needs, there's no need to switch.
 
 6. How to deploy this code?
+    - Ideally there should be a CI/CD pipeline that builds a Docker image on each push, uploads it to a container repository, and pulls it down to some container orchestration solution like ECS or EKS. The warehouse should probably be on something like Redshift or Snowflake instead of Postgres; I suspect switching tap-postgres for something else would already take you halfway there.
 
-**Bonus**: Can you make it to run on a container like process (Docker)? 
+- **Bonus**: Can you make it to run on a container like process (Docker)? (to do)
 
-Data Reporting
--------
-One of the most important aspects to build a DWH is to deliver insights to end-users. 
+## Data reporting
+1. [What are the top 5 nations in terms of revenue?](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/reporting/rpt_top_countries_by_revenue.sql)
+2. [From the top 5 nations, what is the most common shipping mode?](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/reporting/rpt_top_shipping_modes_in_top_countries.sql)
+    - I interpreted this as "For *each* of the top 5 nations, what is the most common shipping mode?" though I recognize it could mean "Only counting the top 5 nations, what is the most common shipping mode?"
+3. [What are the top selling months?](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/reporting/rpt_top_selling_months.sql)
+4. [Who are the top customer in terms of revenue and/or quantity?](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/reporting/rpt_top_customers_by_revenue.sql)
+5. [Compare the sales revenue of on current period against previous period?](https://github.com/mkdlt/dataengineer_test/blob/master/meltano/transform/models/reporting/rpt_current_vs_previous_revenue.sql)
+    - Assumed any period would suffice so I just went with a month to month comparison.
 
-Can you using the designed star schema (or if you prefer the raw data), generate SQL statements to answer the following questions:
+## Data profiling
+Considering we're already using dbt, something like [dbt_profiler](https://hub.getdbt.com/data-mie/dbt_profiler/latest/) would probably best suit our needs. I've also heard good things about [Great Expectations](https://greatexpectations.io/). For datasets as small as the one tackled in this project, though, something like [pandas_profiling](https://pandas-profiling.github.io/pandas-profiling/docs/master/rtd/) would probably suffice.
 
-1. What are the top 5 nations in terms of revenue?
+## Architecture
+I think Meltano makes a solid case for Singer + dbt + Airflow for small to mid-sized business cases. Like I said, ideally there would be a CI/CD pipeline from code repo to container repo to ECS/EKS, plus testing and monitoring etc. I'm not sure how Singer compares to ingestion based on Spark when it comes to much bigger workloads, so maybe that's the first component to be reevaluated.
 
-2. From the top 5 nations, what is the most common shipping mode?
+## Step by step
+```
+$ git clone git@github.com:mkdlt/dataengineer_test.git
+$ cd datangineer_test
+```
+After installing pyenv and pyenv-virtualenv:
+```
+$ pyenv install 3.8.12
+$ pyenv virtualenv 3.8.12 de_test
+$ pyenv local de_test
+$ pyenv exec pip install meltano
+$ cd meltano
+$ pyenv exec meltano install
+```
+This will install everything based on the meltano.yml file.
 
-3. What are the top selling months?
-
-4. Who are the top customer in terms of revenue and/or quantity?
-
-5. Compare the sales revenue of on current period against previous period?
-
-
-Data profilling
-----   
-Data profiling are bonus.
-
-What tools or techniques you would use to profile the data?
- 
-What results of the data profiling can impact on your analysis and design?   
-
-
-
-Architecture
------
-If this pipeline is to be build for a real live environment.
-What would be your recommendations in terms of tools and process?
-
-Would be a problem if the data from the source system is growing at 6.1-12.7% rate a month?
-
-
-
-ERD
---
-![alt text](erd.png "ERD")
-
-Author: adilsonmendonca
+Run postgres in a Docker container like so.
+```
+$ docker run --name de_test -e POSTGRES_PASSWORD=password -e POSTGRES_DB=de_test -p 5432:5432 -d postgres
+```
+Run the pipeline.
+```
+$ pyenv exec meltano elt tap-spreadsheets-anywhere target-postgres --transform=run
+```
+You can now query tables in the staging, analytics_star, and analytics_reporting schemas.
+```
+$ pgcli -h localhost -u postgres -d de_test
+```
+Schedule the pipeline.
+```
+$ pyenv exec meltano schedule tbl-to-postgres tap-spreadsheets-anywhere target-postgres --transform=run @hourly
+$ pyenv exec meltano invoke airflow scheduler -D
+```
