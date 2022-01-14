@@ -84,27 +84,24 @@ $ pyenv virtualenv 3.8.12 de_test
 $ pyenv local de_test
 $ pyenv exec pip install meltano
 $ cd meltano
+$ pyenv exec meltano install
 ```
-Adding the Singer taps:
+This will install everything based on the meltano.yml file.
+
+Run postgres in a Docker container like so.
 ```
-$ pyenv exec meltano add extractor tap-spreadsheets-anywhere
-$ pyenv exec meltano add loader target-postgres --variant meltano
 $ docker run --name de_test -e POSTGRES_PASSWORD=password -e POSTGRES_DB=de_test -p 5432:5432 -d postgres
-$ pyenv exec meltano elt tap-spreadsheets-anywhere target-postgres
 ```
-You can now query tables in the staging schema:
+Run the pipeline.
+```
+$ pyenv exec meltano elt tap-spreadsheets-anywhere target-postgres --transform=run
+```
+You can now query tables in the staging, analytics_star, and analytics_reporting schemas.
 ```
 $ pgcli -h localhost -u postgres -d de_test
 ```
-Adding dbt:
+Schedule the pipeline.
 ```
-$ pyenv exec meltano add transformer dbt
-$ pyenv exec meltano elt tap-spreadsheets-anywhere target-postgres --transform=run
-```
-You can now query tables in the analytics_star and analytics_reporting schemas.
-Adding Airflow:
-```
-$ pyenv exec meltano add orchestrator airflow
 $ pyenv exec meltano schedule tbl-to-postgres tap-spreadsheets-anywhere target-postgres --transform=run @hourly
 $ pyenv exec meltano invoke airflow scheduler -D
 ```
